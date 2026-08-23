@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap');
+@import "tailwindcss";
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+@theme {
+  /* This creates the 'font-premium' utility class */
+  --font-premium: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  
+  /* If you want to make it the default font for the whole site: */
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  button {
+    @apply cursor-pointer;
+  }
+}
+
+/* Custom Animation for the Register Page Illustration */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 40s linear infinite;
+}
+
+.leaflet-container {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
