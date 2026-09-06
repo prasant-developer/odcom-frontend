@@ -1,4 +1,3 @@
-
 // import React, { useState, useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
 // import DashboardLayout from "../Admin/Layout";
@@ -48,9 +47,10 @@
 //   const [localFormData, setLocalFormData] = useState({
 //     record_date: today,
 //     billing_type: "Monthly",
-//     status: "Pending",
+//     status: "Active",
 //     device_id: "",
-//     care_center_id: "", // Tracks relational ID
+//     care_center_id: "",
+//     accessory_id: [], // array of selected accessory names (strings)
 //   });
 
 //   const formData = passedFormData || localFormData;
@@ -63,13 +63,13 @@
 //   };
 
 //   const [deviceModels, setDeviceModels] = useState([]);
-//   const [careCenters, setCareCenters] = useState([]); // Care centers list
-//   const [references, setReferences] = useState([]); // State for references dropdown
-//   const [inventoryList, setInventoryList] = useState([]);
-//   const [filteredSerials, setFilteredSerials] = useState([]);
+//   const [careCenters, setCareCenters] = useState([]);
+//   const [references, setReferences] = useState([]);
 //   const [assetPhotos, setAssetPhotos] = useState([]);
 //   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [accessories, setAccessories] = useState([]); // Accessories list
+
+//   // Accessories options derived from the selected device
+//   const [deviceAccessories, setDeviceAccessories] = useState([]);
 
 //   // ===============================
 //   // 1. FETCH EQUIPMENT MODELS
@@ -96,7 +96,7 @@
 //   }, []);
 
 //   // ===============================
-//   // 2. FETCH CARE CENTERS FOR DROPDOWN
+//   // 2. FETCH CARE CENTERS
 //   // ===============================
 //   useEffect(() => {
 //     const fetchCareCenters = async () => {
@@ -109,8 +109,6 @@
 //         });
 //         const result = await res.json();
 //         const items = Array.isArray(result) ? result : result.data || [];
-
-//         // Filter for active centers
 //         const activeCenters = items.filter((c) => c.status === "active");
 //         setCareCenters(activeCenters);
 //       } catch (err) {
@@ -121,7 +119,7 @@
 //   }, []);
 
 //   // ===============================
-//   // 2.1 FETCH REFERENCES / DOCTORS FOR DROPDOWNS
+//   // 2.1 FETCH REFERENCES / DOCTORS
 //   // ===============================
 //   useEffect(() => {
 //     const fetchReferences = async () => {
@@ -134,8 +132,6 @@
 //         });
 //         const result = await res.json();
 //         const items = Array.isArray(result) ? result : result.data || [];
-
-//         // Filter active doctor references
 //         const activeReferences = items.filter((r) => r.status === "active");
 //         setReferences(activeReferences);
 //       } catch (err) {
@@ -146,71 +142,31 @@
 //   }, []);
 
 //   // ===============================
-//   // 2.2 FETCH ACCESSORIES FOR DROPDOWN
+//   // WHEN DEVICE CHANGES → load its accessories
 //   // ===============================
 //   useEffect(() => {
-//     const fetchAccessories = async () => {
-//       try {
-//         const token = localStorage.getItem("token");
-//         const res = await fetch(`${API_BASE_URL}/api/accessori`, {
-//           headers: {
-//             ...(token && { Authorization: `Bearer ${token}` }),
-//           },
-//         });
-//         const result = await res.json();
-//         const items = Array.isArray(result) ? result : result.data || [];
-
-//         // Filter active accessories
-//         const activeAccessories = items.filter((a) => a.status === "active");
-//         setAccessories(activeAccessories);
-//       } catch (err) {
-//         console.error("Failed fetching accessory entities:", err);
-//       }
-//     };
-//     fetchAccessories();
-//   }, []);
-
-//   // ===============================
-//   // 3. FETCH INVENTORY
-//   // ===============================
-//   useEffect(() => {
-//     const fetchInventory = async () => {
-//       try {
-//         const token = localStorage.getItem("token");
-//         const res = await fetch(`${API_BASE_URL}/api/inventory`, {
-//           headers: {
-//             ...(token && { Authorization: `Bearer ${token}` }),
-//           },
-//         });
-//         const result = await res.json();
-//         if (result.success) {
-//           setInventoryList(result.data || []);
-//         }
-//       } catch (err) {
-//         console.error("Failed fetching hardware inventory pools:", err);
-//       }
-//     };
-//     fetchInventory();
-//   }, []);
-
-//   // Filter serial numbers dynamically
-//   useEffect(() => {
-//     if (formData?.device_id) {
-//       const chosenDeviceObj = deviceModels.find(
-//         (d) => Number(d.device_id) === Number(formData.device_id),
-//       );
-//       if (chosenDeviceObj) {
-//         const serials = inventoryList.filter(
-//           (item) => item.device_model === chosenDeviceObj.device_name,
-//         );
-//         setFilteredSerials(serials);
-//       }
-//     } else {
-//       setFilteredSerials([]);
+//     if (!formData?.device_id) {
+//       setDeviceAccessories([]);
+//       // clear previously selected accessories when device is cleared
+//       setFormData((prev) => ({
+//         ...prev,
+//         accessory_id: [],
+//       }));
+//       return;
 //     }
-//   }, [formData?.device_id, deviceModels, inventoryList]);
 
-//   // Clean up memory leaks from object URLs
+//     const selectedDevice = deviceModels.find(
+//       (d) => Number(d.device_id) === Number(formData.device_id)
+//     );
+
+//     if (selectedDevice && Array.isArray(selectedDevice.accessories)) {
+//       setDeviceAccessories(selectedDevice.accessories);
+//     } else {
+//       setDeviceAccessories([]);
+//     }
+//   }, [formData?.device_id, deviceModels]);
+
+//   // Clean up object URLs
 //   useEffect(() => {
 //     const urls = assetPhotos.map((photo) => photo.previewUrl);
 //     return () => {
@@ -221,7 +177,6 @@
 //   const handleCareCenterChange = (e) => {
 //     const selectedId = e.target.value;
 
-//     // No selection
 //     if (!selectedId) {
 //       setFormData((prev) => ({
 //         ...prev,
@@ -234,7 +189,6 @@
 //       return;
 //     }
 
-//     // Other selected
 //     if (selectedId === "other") {
 //       setFormData((prev) => ({
 //         ...prev,
@@ -247,9 +201,8 @@
 //       return;
 //     }
 
-//     // Existing care center
 //     const selectedCenter = careCenters.find(
-//       (center) => Number(center.carecenter_id) === Number(selectedId),
+//       (center) => Number(center.carecenter_id) === Number(selectedId)
 //     );
 
 //     if (selectedCenter) {
@@ -287,7 +240,7 @@
 
 //   const handleRemovePhoto = (idToRemove) => {
 //     setAssetPhotos((prevPhotos) =>
-//       prevPhotos.filter((p) => p.id !== idToRemove),
+//       prevPhotos.filter((p) => p.id !== idToRemove)
 //     );
 //   };
 
@@ -315,7 +268,12 @@
 //           return;
 
 //         if (formData[key] !== null && formData[key] !== undefined) {
-//           body.append(key, formData[key]);
+//           // Handle array fields (accessory_id)
+//           if (Array.isArray(formData[key])) {
+//             body.append(key, JSON.stringify(formData[key]));
+//           } else {
+//             body.append(key, formData[key]);
+//           }
 //         }
 //       });
 
@@ -340,7 +298,7 @@
 //       alert(
 //         isEditMode
 //           ? "Rental parameters modified successfully."
-//           : "New rental transaction deployed successfully!",
+//           : "New rental transaction deployed successfully!"
 //       );
 
 //       if (onSuccess) onSuccess();
@@ -388,6 +346,12 @@
 //     "overflow-hidden rounded-[20px] border border-[#E1ECE7] bg-white shadow-[0_8px_28px_rgba(25,92,67,0.055)]";
 
 //   const isEditing = !!formData?.rental_id;
+
+//   // Build options for react-select from the selected device's accessories
+//   const accessoryOptions = deviceAccessories.map((acc) => ({
+//     value: acc,
+//     label: acc,
+//   }));
 
 //   return (
 //     <DashboardLayout>
@@ -451,13 +415,13 @@
 //                   </label>
 //                   <select
 //                     required
-//                     value={formData?.deal_type || "Monthly"}
+//                     value={formData?.deal_type || ""}
 //                     onChange={(e) =>
 //                       setFormData({ ...formData, deal_type: e.target.value })
 //                     }
 //                     className={selectClass}
 //                   >
-//                     <option value="select">Select deal type</option>
+//                     <option value="">Select deal type</option>
 //                     <option value="B2B">B2B</option>
 //                     <option value="B2C">B2C</option>
 //                   </select>
@@ -469,13 +433,13 @@
 //                   </label>
 //                   <select
 //                     required
-//                     value={formData?.unit_type || "Monthly"}
+//                     value={formData?.unit_type || ""}
 //                     onChange={(e) =>
 //                       setFormData({ ...formData, unit_type: e.target.value })
 //                     }
 //                     className={selectClass}
 //                   >
-//                     <option value="Monthly">Select unit</option>
+//                     <option value="">Select unit</option>
 //                     <option value="CWF">BWF</option>
 //                     <option value="ODCOM">ODCOM</option>
 //                   </select>
@@ -487,13 +451,13 @@
 //                   </label>
 //                   <select
 //                     required
-//                     value={formData?.mode_type || "Monthly"}
+//                     value={formData?.mode_type || ""}
 //                     onChange={(e) =>
 //                       setFormData({ ...formData, mode_type: e.target.value })
 //                     }
 //                     className={selectClass}
 //                   >
-//                     <option value="Monthly">Select mode</option>
+//                     <option value="">Select mode</option>
 //                     <option value="Prepaid">Prepaid</option>
 //                     <option value="Postpaid">Postpaid</option>
 //                   </select>
@@ -519,6 +483,7 @@
 //                         setFormData({
 //                           ...formData,
 //                           device_id: e.target.value,
+//                           accessory_id: [], // clear previous accessories
 //                         });
 //                       }}
 //                       className={selectClass}
@@ -534,12 +499,9 @@
 
 //                   {/* Serial No. */}
 //                   <div className="rounded-[16px] border border-[#DCEBE4] bg-[#F8FCFA] p-4">
-//                     <div className="mb-3 flex items-center gap-2"></div>
-
 //                     <label className={labelClass}>
-//                       Serial No. <span className="text-rose-500">*</span>
+//                       Serial No. <span className="text-rose-500"></span>
 //                     </label>
-
 //                     <input
 //                       type="text"
 //                       required
@@ -555,25 +517,16 @@
 //                     />
 //                   </div>
 
-//                   {/* Accessories */}
+//                   {/* Accessories – now driven by selected device */}
 //                   <div className="rounded-[16px] border border-[#DCEBE4] bg-[#F8FCFA] p-4">
-//                     <div className="mb-3 flex items-center gap-2"></div>
-
 //                     <label className={labelClass}>Select Accessories</label>
 //                     <Select
 //                       isMulti
-//                       options={accessories.map((acc) => ({
-//                         value: acc.accessory_id,
-//                         label: acc.accessory_name,
-//                       }))}
-//                       value={accessories
-//                         .filter((acc) =>
-//                           formData.accessory_id?.includes(acc.accessory_id),
-//                         )
-//                         .map((acc) => ({
-//                           value: acc.accessory_id,
-//                           label: acc.accessory_name,
-//                         }))}
+//                       isDisabled={!formData?.device_id}
+//                       options={accessoryOptions}
+//                       value={accessoryOptions.filter((opt) =>
+//                         (formData.accessory_id || []).includes(opt.value)
+//                       )}
 //                       onChange={(selected) =>
 //                         setFormData({
 //                           ...formData,
@@ -584,8 +537,16 @@
 //                       }
 //                       className="w-full text-[12px]"
 //                       classNamePrefix="odcom-select"
-//                       placeholder="Choose accessories..."
-//                       noOptionsMessage={() => "No accessories available"}
+//                       placeholder={
+//                         formData?.device_id
+//                           ? "Choose accessories..."
+//                           : "Select a device first"
+//                       }
+//                       noOptionsMessage={() =>
+//                         formData?.device_id
+//                           ? "No accessories for this device"
+//                           : "Select a device first"
+//                       }
 //                       styles={{
 //                         control: (provided, state) => ({
 //                           ...provided,
@@ -1154,20 +1115,15 @@
 //             ================================================== */}
 //             <section className={cardClass}>
 //               <div className="grid grid-cols-1 gap-5 p-5 sm:p-6 lg:grid-cols-[0.9fr_1.1fr]">
-//                 {/* Notes */}
-                
-
 //                 <div className="space-y-5">
 //                   {/* Transactions Notes */}
 //                   <div>
 //                     <label className={labelClass}>Transactions Notes</label>
-
 //                     <div className="relative">
 //                       <FileText
 //                         size={15}
 //                         className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
 //                       />
-
 //                       <textarea
 //                         rows={5}
 //                         value={formData?.notes || ""}
@@ -1181,20 +1137,16 @@
 //                         placeholder="Installation notes, equipment condition, service requirements, pickup instructions..."
 //                       />
 //                     </div>
-
-                    
 //                   </div>
 
 //                   {/* Internal Notes */}
 //                   <div>
 //                     <label className={labelClass}>Internal Notes</label>
-
 //                     <div className="relative">
 //                       <FileText
 //                         size={15}
 //                         className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
 //                       />
-
 //                       <textarea
 //                         rows={5}
 //                         value={formData?.internal_notes || ""}
@@ -1208,8 +1160,6 @@
 //                         placeholder="Internal remarks, team instructions, follow-up details, billing notes..."
 //                       />
 //                     </div>
-
-                    
 //                   </div>
 //                 </div>
 
@@ -1661,23 +1611,23 @@ export default function RentalForm({
 
   const sectionTitle = (number, Icon, title, description) => (
     <div className="flex items-start gap-3.5">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8F6EF] text-[#087A57] ring-1 ring-[#D7EEE4]">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EFFF] text-[#5d2ed7] ring-1 ring-[#E8DEFF]">
         <Icon size={19} strokeWidth={2.1} />
       </div>
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-[#0A8A60]">
+          <span className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-[#5d2ed7]">
             Step {number}
           </span>
-          <span className="h-1 w-1 rounded-full bg-[#C9D8D1]" />
-          <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-slate-400">
+          <span className="h-1 w-1 rounded-full bg-[#D3C4FC]" />
+          <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#7F6EA6]">
             ODCom Rental
           </span>
         </div>
-        <h2 className="mt-1 text-[15px] font-extrabold tracking-[-0.015em] text-[#183A2F]">
+        <h2 className="mt-1 text-[15px] font-extrabold tracking-[-0.015em] text-[#22124D]">
           {title}
         </h2>
-        <p className="mt-0.5 text-[11px] leading-5 text-[#8A9B94]">
+        <p className="mt-0.5 text-[11px] leading-5 text-[#7F6EA6]">
           {description}
         </p>
       </div>
@@ -1685,14 +1635,14 @@ export default function RentalForm({
   );
 
   const labelClass =
-    "mb-1.5 block text-[10.5px] font-extrabold uppercase tracking-[0.055em] text-[#526A60]";
+    "mb-1.5 block text-[10.5px] font-extrabold uppercase tracking-[0.055em] text-[#7F6EA6]";
   const inputClass =
-    "h-[46px] w-full rounded-xl border border-[#DDE9E4] bg-[#FBFDFC] px-3.5 text-[13px] font-semibold text-[#203D33] outline-none transition-all placeholder:font-normal placeholder:text-[#A9B8B1] hover:border-[#BED8CD] focus:border-[#0A9466] focus:bg-white focus:ring-4 focus:ring-[#0A9466]/[0.08]";
+    "h-[46px] w-full rounded-xl border border-[#E3D9FF] bg-[#FAF8FF] px-3.5 text-[13px] font-semibold text-[#22124D] outline-none transition-all placeholder:font-normal placeholder:text-[#A697C7] hover:border-[#D3C4FC] focus:border-[#5d2ed7] focus:bg-white focus:ring-4 focus:ring-[#5d2ed7]/[0.08]";
   const textareaClass =
-    "w-full rounded-xl border border-[#DDE9E4] bg-[#FBFDFC] px-3.5 py-3 text-[13px] font-medium text-[#203D33] outline-none transition-all placeholder:text-[#A9B8B1] hover:border-[#BED8CD] focus:border-[#0A9466] focus:bg-white focus:ring-4 focus:ring-[#0A9466]/[0.08] resize-none";
+    "w-full rounded-xl border border-[#E3D9FF] bg-[#FAF8FF] px-3.5 py-3 text-[13px] font-medium text-[#22124D] outline-none transition-all placeholder:text-[#A697C7] hover:border-[#D3C4FC] focus:border-[#5d2ed7] focus:bg-white focus:ring-4 focus:ring-[#5d2ed7]/[0.08] resize-none";
   const selectClass = `${inputClass} cursor-pointer`;
   const cardClass =
-    "overflow-hidden rounded-[20px] border border-[#E1ECE7] bg-white shadow-[0_8px_28px_rgba(25,92,67,0.055)]";
+    "overflow-hidden rounded-[20px] border border-[#E3D9FF] bg-white shadow-[0_8px_28px_rgba(93,46,215,0.045)]";
 
   const isEditing = !!formData?.rental_id;
 
@@ -1704,11 +1654,11 @@ export default function RentalForm({
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-[#F5F9F7]">
+      <div className="min-h-screen bg-[#FAF8FF]">
         {/* =====================================================
             PAGE HEADER
         ====================================================== */}
-        <div className="border-b border-[#E4EEE9] bg-white/95 px-4 py-5 backdrop-blur sm:px-6 lg:px-8">
+        <div className="border-b border-[#F3EFFF] bg-white/95 px-4 py-5 backdrop-blur sm:px-6 lg:px-8">
           <div className="mx-auto flex w-full max-w-[1450px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-4">
               <button
@@ -1716,7 +1666,7 @@ export default function RentalForm({
                 onClick={() =>
                   onCancel ? onCancel() : navigate("/rental-master")
                 }
-                className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#DCE9E3] bg-white text-[#6F837A] transition hover:border-[#BFD8CC] hover:bg-[#F3F9F6] hover:text-[#087A57]"
+                className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E3D9FF] bg-white text-[#553E82] transition hover:border-[#D3C4FC] hover:bg-[#FAF8FF] hover:text-[#5d2ed7]"
                 title="Back to Rental Master"
                 aria-label="Back to Rental Master"
               >
@@ -1724,7 +1674,7 @@ export default function RentalForm({
               </button>
 
               <div>
-                <h1 className="text-[24px] font-extrabold tracking-[-0.035em] text-[#183A2F] sm:text-[28px]">
+                <h1 className="text-[24px] font-extrabold tracking-[-0.035em] text-[#22124D] sm:text-[28px]">
                   {isEditing
                     ? "Edit Rental Requisition"
                     : "Create Rental Requisition"}
@@ -1739,7 +1689,7 @@ export default function RentalForm({
                   onCancel ? onCancel() : navigate("/rental-master")
                 }
                 disabled={isSubmitting}
-                className="hidden h-10 items-center gap-2 rounded-xl border border-[#DDE8E3] bg-white px-4 text-[11px] font-bold text-[#64776F] transition hover:bg-[#F5F9F7] disabled:opacity-50 sm:flex"
+                className="hidden h-10 items-center gap-2 rounded-xl border border-[#E3D9FF] bg-white px-4 text-[11px] font-bold text-[#553E82] transition hover:bg-[#FAF8FF] hover:text-[#5d2ed7] disabled:opacity-50 sm:flex"
               >
                 <ArrowLeft size={14} />
                 Rental Master
@@ -1821,7 +1771,7 @@ export default function RentalForm({
               <div className="p-5 sm:p-6">
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                   {/* Device */}
-                  <div className="rounded-[16px] border border-[#DCEBE4] bg-[#F8FCFA] p-4">
+                  <div className="rounded-[16px] border border-[#E8DEFF] bg-[#FAF8FF] p-4">
                     <label className={labelClass}>
                       Device Model <span className="text-rose-500">*</span>
                     </label>
@@ -1847,7 +1797,7 @@ export default function RentalForm({
                   </div>
 
                   {/* Serial No. */}
-                  <div className="rounded-[16px] border border-[#DCEBE4] bg-[#F8FCFA] p-4">
+                  <div className="rounded-[16px] border border-[#E8DEFF] bg-[#FAF8FF] p-4">
                     <label className={labelClass}>
                       Serial No. <span className="text-rose-500"></span>
                     </label>
@@ -1867,7 +1817,7 @@ export default function RentalForm({
                   </div>
 
                   {/* Accessories – now driven by selected device */}
-                  <div className="rounded-[16px] border border-[#DCEBE4] bg-[#F8FCFA] p-4">
+                  <div className="rounded-[16px] border border-[#E8DEFF] bg-[#FAF8FF] p-4">
                     <label className={labelClass}>Select Accessories</label>
                     <Select
                       isMulti
@@ -1901,17 +1851,17 @@ export default function RentalForm({
                           ...provided,
                           minHeight: "46px",
                           borderRadius: "12px",
-                          borderColor: state.isFocused ? "#0A9466" : "#DDE9E4",
+                          borderColor: state.isFocused ? "#5d2ed7" : "#E3D9FF",
                           backgroundColor: state.isFocused
                             ? "#FFFFFF"
-                            : "#FBFDFC",
+                            : "#FAF8FF",
                           boxShadow: state.isFocused
-                            ? "0 0 0 4px rgba(10,148,102,0.08)"
+                            ? "0 0 0 4px rgba(93,46,215,0.08)"
                             : "none",
                           fontSize: "13px",
                           fontWeight: 600,
                           "&:hover": {
-                            borderColor: "#BED8CD",
+                            borderColor: "#D3C4FC",
                           },
                         }),
                         valueContainer: (provided) => ({
@@ -1920,22 +1870,22 @@ export default function RentalForm({
                         }),
                         multiValue: (provided) => ({
                           ...provided,
-                          backgroundColor: "#E8F6EF",
+                          backgroundColor: "#F3EFFF",
                           borderRadius: "8px",
-                          border: "1px solid #D7EEE4",
+                          border: "1px solid #E8DEFF",
                         }),
                         multiValueLabel: (provided) => ({
                           ...provided,
-                          color: "#087A57",
+                          color: "#5d2ed7",
                           fontWeight: 700,
                           fontSize: "11px",
                         }),
                         multiValueRemove: (provided) => ({
                           ...provided,
-                          color: "#087A57",
+                          color: "#5d2ed7",
                           borderRadius: "0 8px 8px 0",
                           ":hover": {
-                            backgroundColor: "#087A57",
+                            backgroundColor: "#5d2ed7",
                             color: "white",
                           },
                         }),
@@ -1944,15 +1894,15 @@ export default function RentalForm({
                           zIndex: 50,
                           borderRadius: "12px",
                           overflow: "hidden",
-                          border: "1px solid #E1ECE7",
-                          boxShadow: "0 15px 40px rgba(15,72,53,0.12)",
+                          border: "1px solid #E3D9FF",
+                          boxShadow: "0 15px 40px rgba(37,15,97,0.12)",
                         }),
                       }}
                     />
                   </div>
                 </div>
 
-                <div className="mt-5 border-t border-[#EDF3F0] pt-5">
+                <div className="mt-5 border-t border-[#F3EFFF] pt-5">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                     <div>
                       <label className={labelClass}>Record Date</label>
@@ -2054,7 +2004,7 @@ export default function RentalForm({
                   <div className="relative">
                     <CreditCard
                       size={15}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                     />
                     <select
                       required
@@ -2079,7 +2029,7 @@ export default function RentalForm({
                   <div className="relative">
                     <IndianRupee
                       size={15}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                     />
                     <input
                       type="number"
@@ -2102,7 +2052,7 @@ export default function RentalForm({
                   <div className="relative">
                     <IndianRupee
                       size={15}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                     />
                     <input
                       type="number"
@@ -2125,7 +2075,7 @@ export default function RentalForm({
                   <div className="relative">
                     <IndianRupee
                       size={15}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                     />
                     <input
                       type="number"
@@ -2178,7 +2128,7 @@ export default function RentalForm({
                       <div className="relative">
                         <Phone
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2200,7 +2150,7 @@ export default function RentalForm({
                       <div className="relative">
                         <Phone
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2223,7 +2173,7 @@ export default function RentalForm({
                     <div className="relative">
                       <MapPin
                         size={15}
-                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
+                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#9C8AC7]"
                       />
                       <textarea
                         rows={3}
@@ -2262,7 +2212,7 @@ export default function RentalForm({
                       <div className="relative">
                         <Stethoscope
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2314,7 +2264,7 @@ export default function RentalForm({
                       <div className="relative">
                         <UserRound
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2357,7 +2307,7 @@ export default function RentalForm({
                     <div className="relative">
                       <UsersRound
                         size={15}
-                        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                       />
                       <input
                         type="text"
@@ -2380,7 +2330,7 @@ export default function RentalForm({
                       <div className="relative">
                         <Phone
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2402,7 +2352,7 @@ export default function RentalForm({
                       <div className="relative">
                         <Phone
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2425,7 +2375,7 @@ export default function RentalForm({
                     <div className="relative">
                       <MapPin
                         size={15}
-                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
+                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#9C8AC7]"
                       />
                       <textarea
                         rows={4}
@@ -2442,13 +2392,13 @@ export default function RentalForm({
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-[#E2EEE8] bg-[#F7FBF9] px-4 py-3">
+                  <div className="rounded-xl border border-[#E8DEFF] bg-[#FAF8FF] px-4 py-3">
                     <div className="flex items-start gap-2.5">
                       <HeartHandshake
                         size={16}
-                        className="mt-0.5 shrink-0 text-[#087A57]"
+                        className="mt-0.5 shrink-0 text-[#5d2ed7]"
                       />
-                      <p className="text-[10.5px] leading-5 text-[#758980]">
+                      <p className="text-[10.5px] leading-5 text-[#7F6EA6]">
                         Verify recipient contact and delivery location before
                         deploying the equipment to reduce service and pickup
                         errors.
@@ -2471,7 +2421,7 @@ export default function RentalForm({
                     <div className="relative">
                       <FileText
                         size={15}
-                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
+                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#9C8AC7]"
                       />
                       <textarea
                         rows={5}
@@ -2494,7 +2444,7 @@ export default function RentalForm({
                     <div className="relative">
                       <FileText
                         size={15}
-                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
+                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#9C8AC7]"
                       />
                       <textarea
                         rows={5}
@@ -2513,26 +2463,26 @@ export default function RentalForm({
                 </div>
 
                 {/* Upload */}
-                <div className="rounded-[16px] border border-dashed border-[#CFE2D9] bg-[#F8FCFA] p-4">
+                <div className="rounded-[16px] border border-dashed border-[#D3C4FC] bg-[#FAF8FF] p-4">
                   <div className="mb-4 flex items-center justify-between gap-3">
                     {assetPhotos.length > 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-[#D7EEE4] bg-[#EAF7F0] px-2 py-1 text-[9px] font-bold text-[#087A57]">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-[#E8DEFF] bg-[#F3EFFF] px-2 py-1 text-[9px] font-bold text-[#5d2ed7]">
                         <CheckCircle2 size={11} />
                         {assetPhotos.length} Ready
                       </span>
                     )}
                   </div>
 
-                  <label className="group flex cursor-pointer flex-col items-center justify-center rounded-[14px] border border-[#DCEAE3] bg-white px-4 py-6 text-center transition hover:border-[#AFCFC0] hover:bg-[#FBFDFC]">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#EAF7F0] text-[#087A57] transition group-hover:scale-105">
+                  <label className="group flex cursor-pointer flex-col items-center justify-center rounded-[14px] border border-[#E3D9FF] bg-white px-4 py-6 text-center transition hover:border-[#D3C4FC] hover:bg-[#FAF8FF]">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F3EFFF] text-[#5d2ed7] transition group-hover:scale-105">
                       <ImagePlus size={20} />
                     </div>
 
-                    <p className="mt-3 text-[11px] font-extrabold text-[#496158]">
+                    <p className="mt-3 text-[11px] font-extrabold text-[#22124D]">
                       Add handover photographs
                     </p>
 
-                    <p className="mt-1 text-[9.5px] text-[#98A8A1]">
+                    <p className="mt-1 text-[9.5px] text-[#A697C7]">
                       Select one or multiple equipment images
                     </p>
 
@@ -2550,7 +2500,7 @@ export default function RentalForm({
                       {assetPhotos.map((photo, index) => (
                         <div
                           key={photo.id}
-                          className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-[#DDE9E4] bg-white shadow-sm"
+                          className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-[#E3D9FF] bg-white shadow-sm"
                         >
                           <img
                             src={photo.previewUrl}
@@ -2585,18 +2535,18 @@ export default function RentalForm({
                 FINAL ACTION / SUMMARY
             ================================================== */}
             <div className="sticky bottom-3 z-20">
-              <div className="flex flex-col gap-3 rounded-[18px] border border-[#DDE9E4] bg-white/95 px-4 py-3.5 shadow-[0_18px_45px_rgba(24,82,61,0.14)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:px-5">
+              <div className="flex flex-col gap-3 rounded-[18px] border border-[#E3D9FF] bg-white/95 px-4 py-3.5 shadow-[0_18px_45px_rgba(93,46,215,0.12)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:px-5">
                 <div className="flex items-center gap-3">
-                  <div className="hidden h-9 w-9 items-center justify-center rounded-xl bg-[#EAF7F0] text-[#087A57] sm:flex">
+                  <div className="hidden h-9 w-9 items-center justify-center rounded-xl bg-[#F3EFFF] text-[#5d2ed7] sm:flex">
                     <ShieldCheck size={17} />
                   </div>
                   <div>
-                    <p className="text-[10.5px] font-extrabold text-[#405B50]">
+                    <p className="text-[10.5px] font-extrabold text-[#22124D]">
                       {isEditing
                         ? "Ready to update this rental record?"
                         : "Ready to create this rental requisition?"}
                     </p>
-                    <p className="mt-0.5 text-[9px] text-[#98A8A1]">
+                    <p className="mt-0.5 text-[9px] text-[#7F6EA6]">
                       Required fields are marked with an asterisk.
                     </p>
                   </div>
@@ -2609,7 +2559,7 @@ export default function RentalForm({
                       onCancel ? onCancel() : navigate("/rental-master")
                     }
                     disabled={isSubmitting}
-                    className="flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-[#DCE7E2] bg-white px-4 text-[11px] font-bold text-[#687B72] transition hover:bg-[#F5F9F7] disabled:opacity-50 sm:flex-none"
+                    className="flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-[#E3D9FF] bg-white px-4 text-[11px] font-bold text-[#553E82] transition hover:bg-[#FAF8FF] hover:text-[#5d2ed7] disabled:opacity-50 sm:flex-none"
                   >
                     <X size={14} />
                     Discard
@@ -2618,7 +2568,7 @@ export default function RentalForm({
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex h-10 flex-[1.5] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#087A57] to-[#0A9668] px-5 text-[11px] font-extrabold text-white shadow-[0_9px_22px_rgba(8,122,87,0.22)] transition hover:-translate-y-[1px] hover:shadow-[0_12px_28px_rgba(8,122,87,0.27)] active:translate-y-0 disabled:pointer-events-none disabled:opacity-65 sm:flex-none"
+                    className="flex h-10 flex-[1.5] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#421E9F] to-[#5d2ed7] px-5 text-[11px] font-extrabold text-white shadow-[0_9px_22px_rgba(93,46,215,0.22)] transition hover:-translate-y-[1px] hover:shadow-[0_12px_28px_rgba(93,46,215,0.28)] active:translate-y-0 disabled:pointer-events-none disabled:opacity-65 sm:flex-none"
                   >
                     {isSubmitting ? (
                       <>

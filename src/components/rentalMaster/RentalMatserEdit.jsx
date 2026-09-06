@@ -4,22 +4,14 @@
 // import Select from "react-select";
 // import {
 //   ArrowLeft,
-//   Building2,
-//   CalendarDays,
-//   Camera,
 //   CheckCircle2,
-//   ChevronRight,
-//   CircleDollarSign,
-//   ClipboardList,
 //   CreditCard,
 //   FileText,
 //   HeartHandshake,
 //   ImagePlus,
 //   IndianRupee,
-//   Layers3,
 //   Loader2,
 //   MapPin,
-//   Package,
 //   Phone,
 //   Save,
 //   ShieldCheck,
@@ -27,7 +19,6 @@
 //   Trash2,
 //   UserRound,
 //   UsersRound,
-//   Wrench,
 //   X,
 // } from "lucide-react";
 
@@ -43,26 +34,25 @@
 //     rental_id: id || "",
 //     record_date: today,
 //     billing_type: "Monthly",
-//     status: "Pending",
+//     status: "Active",
 //     device_id: "",
 //     care_center_id: "",
 //     accessory_id: [],
+//     serial_no: "",
+//     internal_notes: "",
 //   });
 
 //   const [isLoading, setIsLoading] = useState(true);
 //   const [existingPhotos, setExistingPhotos] = useState([]);
-
 //   const [deviceModels, setDeviceModels] = useState([]);
-//   const [careCenters, setCareCenters] = useState([]); // Care centers list
-//   const [references, setReferences] = useState([]); // State for references dropdown
-//   const [inventoryList, setInventoryList] = useState([]);
-//   const [filteredSerials, setFilteredSerials] = useState([]);
+//   const [careCenters, setCareCenters] = useState([]);
+//   const [references, setReferences] = useState([]);
 //   const [assetPhotos, setAssetPhotos] = useState([]);
 //   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [accessories, setAccessories] = useState([]); // Accessories list
+//   const [deviceAccessories, setDeviceAccessories] = useState([]);
 
 //   // ===============================
-//   // 0. LOAD RENTAL BY ID FOR EDIT
+//   // 0. LOAD RENTAL BY ID
 //   // ===============================
 //   useEffect(() => {
 //     if (!id) {
@@ -76,8 +66,8 @@
 //         return value
 //           .map((item) =>
 //             typeof item === "object"
-//               ? (item.accessory_id ?? item.id ?? item.value)
-//               : item,
+//               ? item.accessory_id ?? item.id ?? item.value ?? item
+//               : item
 //           )
 //           .filter((item) => item !== null && item !== undefined && item !== "");
 //       }
@@ -86,24 +76,22 @@
 
 //       if (typeof value === "string") {
 //         const trimmed = value.trim();
-
 //         try {
 //           const parsed = JSON.parse(trimmed);
 //           if (Array.isArray(parsed)) {
 //             return parsed
 //               .map((item) =>
 //                 typeof item === "object"
-//                   ? (item.accessory_id ?? item.id ?? item.value)
-//                   : item,
+//                   ? item.accessory_id ?? item.id ?? item.value ?? item
+//                   : item
 //               )
 //               .filter(
-//                 (item) => item !== null && item !== undefined && item !== "",
+//                 (item) => item !== null && item !== undefined && item !== ""
 //               );
 //           }
 //         } catch {
-//           // Not JSON; continue with comma-separated fallback.
+//           // fallback
 //         }
-
 //         if (trimmed.includes(",")) {
 //           return trimmed
 //             .split(",")
@@ -111,14 +99,12 @@
 //             .filter(Boolean);
 //         }
 //       }
-
 //       return [value];
 //     };
 
 //     const loadRental = async () => {
 //       try {
 //         setIsLoading(true);
-
 //         const token = localStorage.getItem("token");
 //         const res = await fetch(`${API_BASE_URL}/api/rentals/${id}`, {
 //           headers: {
@@ -129,7 +115,7 @@
 //         if (!res.ok) {
 //           if (res.status === 401) {
 //             throw new Error(
-//               "Authentication session expired. Please log in again.",
+//               "Authentication session expired. Please log in again."
 //             );
 //           }
 //           throw new Error("Failed to load rental requisition.");
@@ -144,11 +130,10 @@
 //           device_id: data?.device_id ?? data?.device?.device_id ?? "",
 //           care_center_id: data?.care_center_id ?? "",
 //           accessory_id: normalizeAccessoryIds(
-//             data?.accessory_id ??
-//               data?.accessories ??
-//               data?.accessory_ids ??
-//               [],
+//             data?.accessory_id ?? data?.accessories ?? data?.accessory_ids ?? []
 //           ),
+//           serial_no: data?.serial_no || "",
+//           internal_notes: data?.internal_notes || "",
 //           deal_type: data?.deal_type ?? "",
 //           unit_type: data?.unit_type ?? "",
 //           mode_type: data?.mode_type ?? "",
@@ -158,6 +143,7 @@
 //           login_out_date: data?.login_out_date || "",
 //           notify_date: data?.notify_date || "",
 //           recall_date: data?.recall_date || "",
+//           status: data?.status || "Active",
 //         });
 
 //         const rawPhotos = Array.isArray(data?.asset_photos)
@@ -171,16 +157,14 @@
 //                 typeof photo === "string"
 //                   ? photo
 //                   : photo?.url || photo?.path || photo?.photo_url || "";
-
 //               if (!url) return null;
-
 //               return {
 //                 id: `existing-${index}-${url}`,
 //                 url,
 //                 isExisting: true,
 //               };
 //             })
-//             .filter(Boolean),
+//             .filter(Boolean)
 //         );
 //       } catch (err) {
 //         console.error("Failed loading rental for edit:", err);
@@ -195,7 +179,7 @@
 //   }, [id, navigate, today]);
 
 //   // ===============================
-//   // 1. FETCH EQUIPMENT MODELS
+//   // 1. FETCH DEVICES
 //   // ===============================
 //   useEffect(() => {
 //     const fetchDevices = async () => {
@@ -208,18 +192,16 @@
 //         });
 //         const result = await res.json();
 //         const items = Array.isArray(result) ? result : result.data || [];
-
-//         const activeDevices = items.filter((d) => d.status === "active");
-//         setDeviceModels(activeDevices);
+//         setDeviceModels(items.filter((d) => d.status === "active"));
 //       } catch (err) {
-//         console.error("Failed fetching hardware device entities:", err);
+//         console.error("Failed fetching devices:", err);
 //       }
 //     };
 //     fetchDevices();
 //   }, []);
 
 //   // ===============================
-//   // 2. FETCH CARE CENTERS FOR DROPDOWN
+//   // 2. FETCH CARE CENTERS
 //   // ===============================
 //   useEffect(() => {
 //     const fetchCareCenters = async () => {
@@ -232,19 +214,16 @@
 //         });
 //         const result = await res.json();
 //         const items = Array.isArray(result) ? result : result.data || [];
-
-//         // Filter for active centers
-//         const activeCenters = items.filter((c) => c.status === "active");
-//         setCareCenters(activeCenters);
+//         setCareCenters(items.filter((c) => c.status === "active"));
 //       } catch (err) {
-//         console.error("Failed fetching care center entities:", err);
+//         console.error("Failed fetching care centers:", err);
 //       }
 //     };
 //     fetchCareCenters();
 //   }, []);
 
 //   // ===============================
-//   // 2.1 FETCH REFERENCES / DOCTORS FOR DROPDOWNS
+//   // 3. FETCH REFERENCES
 //   // ===============================
 //   useEffect(() => {
 //     const fetchReferences = async () => {
@@ -257,94 +236,43 @@
 //         });
 //         const result = await res.json();
 //         const items = Array.isArray(result) ? result : result.data || [];
-
-//         // Filter active doctor references
-//         const activeReferences = items.filter((r) => r.status === "active");
-//         setReferences(activeReferences);
+//         setReferences(items.filter((r) => r.status === "active"));
 //       } catch (err) {
-//         console.error("Failed fetching reference doctor entities:", err);
+//         console.error("Failed fetching references:", err);
 //       }
 //     };
 //     fetchReferences();
 //   }, []);
 
 //   // ===============================
-//   // 2.2 FETCH ACCESSORIES FOR DROPDOWN
+//   // WHEN DEVICE CHANGES → load its accessories
 //   // ===============================
 //   useEffect(() => {
-//     const fetchAccessories = async () => {
-//       try {
-//         const token = localStorage.getItem("token");
-//         const res = await fetch(`${API_BASE_URL}/api/accessori`, {
-//           headers: {
-//             ...(token && { Authorization: `Bearer ${token}` }),
-//           },
-//         });
-//         const result = await res.json();
-//         const items = Array.isArray(result) ? result : result.data || [];
-
-//         // Filter active accessories
-//         const activeAccessories = items.filter((a) => a.status === "active");
-//         setAccessories(activeAccessories);
-//       } catch (err) {
-//         console.error("Failed fetching accessory entities:", err);
-//       }
-//     };
-//     fetchAccessories();
-//   }, []);
-
-//   // ===============================
-//   // 3. FETCH INVENTORY
-//   // ===============================
-//   useEffect(() => {
-//     const fetchInventory = async () => {
-//       try {
-//         const token = localStorage.getItem("token");
-//         const res = await fetch(`${API_BASE_URL}/api/inventory`, {
-//           headers: {
-//             ...(token && { Authorization: `Bearer ${token}` }),
-//           },
-//         });
-//         const result = await res.json();
-//         if (result.success) {
-//           setInventoryList(result.data || []);
-//         }
-//       } catch (err) {
-//         console.error("Failed fetching hardware inventory pools:", err);
-//       }
-//     };
-//     fetchInventory();
-//   }, []);
-
-//   // Filter serial numbers dynamically
-//   useEffect(() => {
-//     if (formData?.device_id) {
-//       const chosenDeviceObj = deviceModels.find(
-//         (d) => Number(d.device_id) === Number(formData.device_id),
-//       );
-//       if (chosenDeviceObj) {
-//         const serials = inventoryList.filter(
-//           (item) => item.device_model === chosenDeviceObj.device_name,
-//         );
-//         setFilteredSerials(serials);
-//       }
-//     } else {
-//       setFilteredSerials([]);
+//     if (!formData?.device_id || deviceModels.length === 0) {
+//       setDeviceAccessories([]);
+//       return;
 //     }
-//   }, [formData?.device_id, deviceModels, inventoryList]);
 
-//   // Clean up memory leaks from object URLs
+//     const selectedDevice = deviceModels.find(
+//       (d) => Number(d.device_id) === Number(formData.device_id)
+//     );
+
+//     if (selectedDevice && Array.isArray(selectedDevice.accessories)) {
+//       setDeviceAccessories(selectedDevice.accessories);
+//     } else {
+//       setDeviceAccessories([]);
+//     }
+//   }, [formData?.device_id, deviceModels]);
+
+//   // Cleanup object URLs
 //   useEffect(() => {
-//     const urls = assetPhotos.map((photo) => photo.previewUrl);
-//     return () => {
-//       urls.forEach((url) => URL.revokeObjectURL(url));
-//     };
+//     const urls = assetPhotos.map((p) => p.previewUrl);
+//     return () => urls.forEach((url) => URL.revokeObjectURL(url));
 //   }, [assetPhotos]);
 
 //   const handleCareCenterChange = (e) => {
 //     const selectedId = e.target.value;
 
-//     // No selection
 //     if (!selectedId) {
 //       setFormData((prev) => ({
 //         ...prev,
@@ -357,7 +285,6 @@
 //       return;
 //     }
 
-//     // Other selected
 //     if (selectedId === "other") {
 //       setFormData((prev) => ({
 //         ...prev,
@@ -370,9 +297,8 @@
 //       return;
 //     }
 
-//     // Existing care center
 //     const selectedCenter = careCenters.find(
-//       (center) => Number(center.carecenter_id) === Number(selectedId),
+//       (c) => Number(c.carecenter_id) === Number(selectedId)
 //     );
 
 //     if (selectedCenter) {
@@ -389,168 +315,225 @@
 
 //   const handleFileChange = (e) => {
 //     const incomingFiles = Array.from(e.target.files || []);
-
 //     const newPhotos = incomingFiles.map((file, index) => ({
 //       file,
 //       previewUrl: URL.createObjectURL(file),
 //       id: `${file.name}-${file.size}-${Date.now()}-${index}`,
 //     }));
 
-//     setAssetPhotos((prevPhotos) => {
-//       const remainingSlots = Math.max(
-//         0,
-//         10 - existingPhotos.length - prevPhotos.length,
-//       );
-
-//       if (remainingSlots === 0) {
+//     setAssetPhotos((prev) => {
+//       const remaining = Math.max(0, 10 - existingPhotos.length - prev.length);
+//       if (remaining === 0) {
 //         alert("Maximum 10 photos allowed.");
-//         newPhotos.forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
-//         return prevPhotos;
+//         newPhotos.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+//         return prev;
 //       }
-
-//       if (newPhotos.length > remainingSlots) {
-//         alert(`Only ${remainingSlots} more photo(s) can be added.`);
+//       if (newPhotos.length > remaining) {
+//         alert(`Only ${remaining} more photo(s) can be added.`);
 //       }
-
-//       const accepted = newPhotos.slice(0, remainingSlots);
+//       const accepted = newPhotos.slice(0, remaining);
 //       newPhotos
-//         .slice(remainingSlots)
-//         .forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
-
-//       return [...prevPhotos, ...accepted];
+//         .slice(remaining)
+//         .forEach((p) => URL.revokeObjectURL(p.previewUrl));
+//       return [...prev, ...accepted];
 //     });
-
 //     e.target.value = "";
 //   };
 
 //   const handleRemovePhoto = (idToRemove) => {
-//     setAssetPhotos((prevPhotos) => {
-//       const target = prevPhotos.find((photo) => photo.id === idToRemove);
+//     setAssetPhotos((prev) => {
+//       const target = prev.find((p) => p.id === idToRemove);
 //       if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl);
-//       return prevPhotos.filter((photo) => photo.id !== idToRemove);
+//       return prev.filter((p) => p.id !== idToRemove);
 //     });
 //   };
 
 //   const handleRemoveExistingPhoto = (idToRemove) => {
-//     setExistingPhotos((prevPhotos) =>
-//       prevPhotos.filter((photo) => photo.id !== idToRemove),
-//     );
+//     setExistingPhotos((prev) => prev.filter((p) => p.id !== idToRemove));
 //   };
+
+//   // const handleFormSubmit = async (e) => {
+//   //   e.preventDefault();
+//   //   if (isSubmitting) return;
+//   //   setIsSubmitting(true);
+
+//   //   try {
+//   //     const token = localStorage.getItem("token");
+//   //     const headers = {
+//   //       ...(token && { Authorization: `Bearer ${token}` }),
+//   //     };
+
+//   //     const body = new FormData();
+
+//   //     Object.keys(formData).forEach((key) => {
+//   //       if (
+//   //         [
+//   //           "device",
+//   //           "careCenter",
+//   //           "asset_photos",
+//   //           "accessories",
+//   //           "createdAt",
+//   //           "updatedAt",
+//   //           "created_at",
+//   //           "updated_at",
+//   //         ].includes(key)
+//   //       ) {
+//   //         return;
+//   //       }
+
+//   //       const value = formData[key];
+//   //       if (value === null || value === undefined) return;
+
+//   //       if (key === "accessory_id" && Array.isArray(value)) {
+//   //         body.append("accessory_id", JSON.stringify(value));
+//   //         return;
+//   //       }
+
+//   //       body.append(key, value);
+//   //     });
+
+//   //     // Keep remaining existing photos
+//   //     const remainingExisting = existingPhotos
+//   //       .filter((p) => p.isExisting)
+//   //       .map((p) => p.url);
+//   //     body.append("existing_asset_photos", JSON.stringify(remainingExisting));
+
+//   //     // New photos
+//   //     assetPhotos.forEach((p) => body.append("asset_photos", p.file));
+
+//   //     const response = await fetch(`${API_BASE_URL}/api/rentals/${id}`, {
+//   //       method: "PUT",
+//   //       headers,
+//   //       body,
+//   //     });
+
+//   //     if (!response.ok) {
+//   //       if (response.status === 401) {
+//   //         alert("Authentication session expired. Please log in again.");
+//   //         return;
+//   //       }
+//   //       const errorText = await response.text();
+//   //       throw new Error(errorText || "Server rejected rental update.");
+//   //     }
+
+//   //     const result = await response.json();
+//   //     if (!result.success) {
+//   //       throw new Error(result.message || "Rental update failed.");
+//   //     }
+
+//   //     alert("Rental requisition updated successfully.");
+//   //     navigate("/rental-master");
+//   //   } catch (err) {
+//   //     console.error("Rental update failed:", err);
+//   //     alert(`Update failed: ${err.message}`);
+//   //   } finally {
+//   //     setIsSubmitting(false);
+//   //   }
+//   // };
+
 
 //   const handleFormSubmit = async (e) => {
-//     e.preventDefault();
-//     if (isSubmitting) return;
+//   e.preventDefault();
+//   if (isSubmitting) return;
+//   setIsSubmitting(true);
 
-//     setIsSubmitting(true);
+//   try {
+//     const token = localStorage.getItem("token");
+//     const headers = {
+//       ...(token && { Authorization: `Bearer ${token}` }),
+//     };
 
-//     try {
-//       const token = localStorage.getItem("token");
-//       const headers = {
-//         ...(token && { Authorization: `Bearer ${token}` }),
-//       };
+//     const body = new FormData();
 
-//       const body = new FormData();
+//     // Helper to clean dates
+//     const cleanDate = (value) => {
+//       if (!value || value === "" || value === "Invalid date") return null;
+//       return value;
+//     };
 
-//       Object.keys(formData).forEach((key) => {
-//         if (
-//           [
-//             "device",
-//             "careCenter",
-//             "asset_photos",
-//             "accessories",
-//             "createdAt",
-//             "updatedAt",
-//             "created_at",
-//             "updated_at",
-//           ].includes(key)
-//         ) {
-//           return;
-//         }
-
-//         const value = formData[key];
-
-//         if (value === null || value === undefined) return;
-
-//         // Keep the existing API field name, but serialize multi-accessory
-//         // values predictably inside multipart FormData.
-//         if (key === "accessory_id" && Array.isArray(value)) {
-//           body.append("accessory_id", JSON.stringify(value));
-//           return;
-//         }
-
-//         body.append(key, value);
-//       });
-
-//       const remainingExistingPhotos = existingPhotos
-//         .filter((photo) => photo.isExisting)
-//         .map((photo) => photo.url);
-
-//       body.append(
-//         "existing_asset_photos",
-//         JSON.stringify(remainingExistingPhotos),
-//       );
-
-//       assetPhotos.forEach((photoWrapper) => {
-//         body.append("asset_photos", photoWrapper.file);
-//       });
-
-//       const response = await fetch(`${API_BASE_URL}/api/rentals/${id}`, {
-//         method: "PUT",
-//         headers,
-//         body,
-//       });
-
-//       if (!response.ok) {
-//         if (response.status === 401) {
-//           alert("Authentication session expired. Please log in again.");
-//           return;
-//         }
-
-//         const errorText = await response.text();
-//         throw new Error(errorText || "Server rejected rental update.");
+//     Object.keys(formData).forEach((key) => {
+//       if (
+//         [
+//           "device",
+//           "careCenter",
+//           "asset_photos",
+//           "accessories",
+//           "createdAt",
+//           "updatedAt",
+//           "created_at",
+//           "updated_at",
+//         ].includes(key)
+//       ) {
+//         return;
 //       }
 
-//       const result = await response.json();
+//       let value = formData[key];
 
-//       if (!result.success) {
-//         throw new Error(result.message || "Rental update failed.");
+//       // Clean date fields
+//       if (
+//         [
+//           "record_date",
+//           "login_date",
+//           "notify_date",
+//           "login_out_date",
+//           "recall_date",
+//         ].includes(key)
+//       ) {
+//         value = cleanDate(value);
 //       }
 
-//       alert("Rental requisition updated successfully.");
-//       navigate("/rental-master");
-//     } catch (err) {
-//       console.error("Rental update failed:", err);
-//       alert(`Update failed: ${err.message}`);
-//     } finally {
-//       setIsSubmitting(false);
+//       // Skip null / undefined
+//       if (value === null || value === undefined) return;
+
+//       // Handle accessory_id array
+//       if (key === "accessory_id" && Array.isArray(value)) {
+//         body.append("accessory_id", JSON.stringify(value));
+//         return;
+//       }
+
+//       body.append(key, value);
+//     });
+
+//     // Keep remaining existing photos
+//     const remainingExisting = existingPhotos
+//       .filter((p) => p.isExisting)
+//       .map((p) => p.url);
+//     body.append("existing_asset_photos", JSON.stringify(remainingExisting));
+
+//     // New photos
+//     assetPhotos.forEach((p) => body.append("asset_photos", p.file));
+
+//     const response = await fetch(`${API_BASE_URL}/api/rentals/${id}`, {
+//       method: "PUT",
+//       headers,
+//       body,
+//     });
+
+//     if (!response.ok) {
+//       if (response.status === 401) {
+//         alert("Authentication session expired. Please log in again.");
+//         return;
+//       }
+//       const errorText = await response.text();
+//       throw new Error(errorText || "Server rejected rental update.");
 //     }
-//   };
 
-//   const sectionTitle = (number, Icon, title, description) => (
-//     <div className="flex items-start gap-3.5">
-//       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8F6EF] text-[#087A57] ring-1 ring-[#D7EEE4]">
-//         <Icon size={19} strokeWidth={2.1} />
-//       </div>
-//       <div className="min-w-0">
-//         <div className="flex items-center gap-2">
-//           <span className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-[#0A8A60]">
-//             Step {number}
-//           </span>
-//           <span className="h-1 w-1 rounded-full bg-[#C9D8D1]" />
-//           <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-slate-400">
-//             ODCom Rental
-//           </span>
-//         </div>
-//         <h2 className="mt-1 text-[15px] font-extrabold tracking-[-0.015em] text-[#183A2F]">
-//           {title}
-//         </h2>
-//         <p className="mt-0.5 text-[11px] leading-5 text-[#8A9B94]">
-//           {description}
-//         </p>
-//       </div>
-//     </div>
-//   );
+//     const result = await response.json();
+//     if (!result.success) {
+//       throw new Error(result.message || "Rental update failed.");
+//     }
 
+//     alert("Rental requisition updated successfully.");
+//     navigate("/rental-master");
+//   } catch (err) {
+//     console.error("Rental update failed:", err);
+//     alert(`Update failed: ${err.message}`);
+//   } finally {
+//     setIsSubmitting(false);
+//   }
+// };
+
+//   // Styles
 //   const labelClass =
 //     "mb-1.5 block text-[10.5px] font-extrabold uppercase tracking-[0.055em] text-[#526A60]";
 //   const inputClass =
@@ -561,8 +544,13 @@
 //   const cardClass =
 //     "overflow-hidden rounded-[20px] border border-[#E1ECE7] bg-white shadow-[0_8px_28px_rgba(25,92,67,0.055)]";
 
-//   const isEditing = true;
 //   const totalPhotos = existingPhotos.length + assetPhotos.length;
+
+//   // Accessories options from selected device
+//   const accessoryOptions = deviceAccessories.map((acc) => ({
+//     value: acc,
+//     label: acc,
+//   }));
 
 //   if (isLoading) {
 //     return (
@@ -588,9 +576,7 @@
 //   return (
 //     <DashboardLayout>
 //       <div className="min-h-screen bg-[#F5F9F7]">
-//         {/* =====================================================
-//             PAGE HEADER
-//         ====================================================== */}
+//         {/* HEADER */}
 //         <div className="border-b border-[#E4EEE9] bg-white/95 px-4 py-5 backdrop-blur sm:px-6 lg:px-8">
 //           <div className="mx-auto flex w-full max-w-[1450px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 //             <div className="flex items-start gap-4">
@@ -598,52 +584,31 @@
 //                 type="button"
 //                 onClick={() => navigate("/rental-master")}
 //                 className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#DCE9E3] bg-white text-[#6F837A] transition hover:border-[#BFD8CC] hover:bg-[#F3F9F6] hover:text-[#087A57]"
-//                 title="Back to Rental Master"
-//                 aria-label="Back to Rental Master"
 //               >
 //                 <ArrowLeft size={18} />
 //               </button>
-
 //               <div>
-                
-
 //                 <h1 className="text-[24px] font-extrabold tracking-[-0.035em] text-[#183A2F] sm:text-[28px]">
 //                   Edit Rental Requisition
 //                 </h1>
-
-                
 //               </div>
 //             </div>
-
-//             <div className="flex items-center gap-2.5">
-              
-
-//               <button
-//                 type="button"
-//                 onClick={() => navigate("/rental-master")}
-//                 disabled={isSubmitting}
-//                 className="hidden h-10 items-center gap-2 rounded-xl border border-[#DDE8E3] bg-white px-4 text-[11px] font-bold text-[#64776F] transition hover:bg-[#F5F9F7] disabled:opacity-50 sm:flex"
-//               >
-//                 <ArrowLeft size={14} />
-//                 Rental Master
-//               </button>
-//             </div>
+//             <button
+//               type="button"
+//               onClick={() => navigate("/rental-master")}
+//               disabled={isSubmitting}
+//               className="hidden h-10 items-center gap-2 rounded-xl border border-[#DDE8E3] bg-white px-4 text-[11px] font-bold text-[#64776F] transition hover:bg-[#F5F9F7] disabled:opacity-50 sm:flex"
+//             >
+//               <ArrowLeft size={14} />
+//               Rental Master
+//             </button>
 //           </div>
 //         </div>
 
-//         {/* =====================================================
-//             FORM BODY
-//         ====================================================== */}
 //         <form onSubmit={handleFormSubmit}>
 //           <div className="mx-auto w-full max-w-[1450px] space-y-5 px-4 py-6 sm:px-6 lg:px-8">
-            
-
-//             {/* =================================================
-//                 STEP 1 - RENTAL TYPE
-//             ================================================== */}
+//             {/* STEP 1 - RENTAL TYPE */}
 //             <section className={cardClass}>
-             
-
 //               <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-3 sm:p-6">
 //                 <div>
 //                   <label className={labelClass}>
@@ -651,49 +616,47 @@
 //                   </label>
 //                   <select
 //                     required
-//                     value={formData?.deal_type || "Monthly"}
+//                     value={formData?.deal_type || ""}
 //                     onChange={(e) =>
 //                       setFormData({ ...formData, deal_type: e.target.value })
 //                     }
 //                     className={selectClass}
 //                   >
-//                     <option value="select">Select deal type</option>
+//                     <option value="">Select deal type</option>
 //                     <option value="B2B">B2B</option>
 //                     <option value="B2C">B2C</option>
 //                   </select>
 //                 </div>
-
 //                 <div>
 //                   <label className={labelClass}>
 //                     Unit <span className="text-rose-500">*</span>
 //                   </label>
 //                   <select
 //                     required
-//                     value={formData?.unit_type || "Monthly"}
+//                     value={formData?.unit_type || ""}
 //                     onChange={(e) =>
 //                       setFormData({ ...formData, unit_type: e.target.value })
 //                     }
 //                     className={selectClass}
 //                   >
-//                     <option value="Monthly">Select unit</option>
+//                     <option value="">Select unit</option>
 //                     <option value="CWF">BWF</option>
 //                     <option value="ODCOM">ODCOM</option>
 //                   </select>
 //                 </div>
-
 //                 <div>
 //                   <label className={labelClass}>
 //                     Mode <span className="text-rose-500">*</span>
 //                   </label>
 //                   <select
 //                     required
-//                     value={formData?.mode_type || "Monthly"}
+//                     value={formData?.mode_type || ""}
 //                     onChange={(e) =>
 //                       setFormData({ ...formData, mode_type: e.target.value })
 //                     }
 //                     className={selectClass}
 //                   >
-//                     <option value="Monthly">Select mode</option>
+//                     <option value="">Select mode</option>
 //                     <option value="Prepaid">Prepaid</option>
 //                     <option value="Postpaid">Postpaid</option>
 //                   </select>
@@ -701,21 +664,12 @@
 //               </div>
 //             </section>
 
-//             {/* =================================================
-//                 STEP 2 - EQUIPMENT & DATES
-//             ================================================== */}
+//             {/* STEP 2 - EQUIPMENT & DATES */}
 //             <section className={cardClass}>
-             
-
 //               <div className="p-5 sm:p-6">
-//                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+//                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
 //                   {/* Device */}
 //                   <div className="rounded-[16px] border border-[#DCEBE4] bg-[#F8FCFA] p-4">
-//                     <div className="mb-3 flex items-center gap-2">
-                      
-                      
-//                     </div>
-
 //                     <label className={labelClass}>
 //                       Device Model <span className="text-rose-500">*</span>
 //                     </label>
@@ -726,6 +680,7 @@
 //                         setFormData({
 //                           ...formData,
 //                           device_id: e.target.value,
+//                           accessory_id: [], // clear on device change
 //                         });
 //                       }}
 //                       className={selectClass}
@@ -739,30 +694,36 @@
 //                     </select>
 //                   </div>
 
-//                   {/* Accessories */}
+//                   {/* Serial No. */}
 //                   <div className="rounded-[16px] border border-[#DCEBE4] bg-[#F8FCFA] p-4">
-//                     <div className="mb-3 flex items-center gap-2">
-                      
-//                     </div>
+//                     <label className={labelClass}>
+//                       Serial No. <span className="text-rose-500">*</span>
+//                     </label>
+//                     <input
+//                       type="text"
+//                       required
+//                       value={formData?.serial_no || ""}
+//                       onChange={(e) =>
+//                         setFormData({
+//                           ...formData,
+//                           serial_no: e.target.value,
+//                         })
+//                       }
+//                       className={inputClass}
+//                       placeholder="Enter serial number"
+//                     />
+//                   </div>
 
+//                   {/* Accessories – from selected device */}
+//                   <div className="rounded-[16px] border border-[#DCEBE4] bg-[#F8FCFA] p-4">
 //                     <label className={labelClass}>Select Accessories</label>
 //                     <Select
 //                       isMulti
-//                       options={accessories.map((acc) => ({
-//                         value: acc.accessory_id,
-//                         label: acc.accessory_name,
-//                       }))}
-//                       value={accessories
-//                         .filter((acc) =>
-//                           (formData.accessory_id || []).some(
-//                             (idValue) =>
-//                               Number(idValue) === Number(acc.accessory_id),
-//                           ),
-//                         )
-//                         .map((acc) => ({
-//                           value: acc.accessory_id,
-//                           label: acc.accessory_name,
-//                         }))}
+//                       isDisabled={!formData?.device_id}
+//                       options={accessoryOptions}
+//                       value={accessoryOptions.filter((opt) =>
+//                         (formData.accessory_id || []).includes(opt.value)
+//                       )}
 //                       onChange={(selected) =>
 //                         setFormData({
 //                           ...formData,
@@ -773,8 +734,16 @@
 //                       }
 //                       className="w-full text-[12px]"
 //                       classNamePrefix="odcom-select"
-//                       placeholder="Choose accessories..."
-//                       noOptionsMessage={() => "No accessories available"}
+//                       placeholder={
+//                         formData?.device_id
+//                           ? "Choose accessories..."
+//                           : "Select a device first"
+//                       }
+//                       noOptionsMessage={() =>
+//                         formData?.device_id
+//                           ? "No accessories for this device"
+//                           : "Select a device first"
+//                       }
 //                       styles={{
 //                         control: (provided, state) => ({
 //                           ...provided,
@@ -789,9 +758,7 @@
 //                             : "none",
 //                           fontSize: "13px",
 //                           fontWeight: 600,
-//                           "&:hover": {
-//                             borderColor: "#BED8CD",
-//                           },
+//                           "&:hover": { borderColor: "#BED8CD" },
 //                         }),
 //                         valueContainer: (provided) => ({
 //                           ...provided,
@@ -831,9 +798,8 @@
 //                   </div>
 //                 </div>
 
+//                 {/* Dates */}
 //                 <div className="mt-5 border-t border-[#EDF3F0] pt-5">
-                  
-
 //                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
 //                     <div>
 //                       <label className={labelClass}>Record Date</label>
@@ -849,7 +815,6 @@
 //                         className={inputClass}
 //                       />
 //                     </div>
-
 //                     <div>
 //                       <label className={labelClass}>
 //                         Log In Date <span className="text-rose-500">*</span>
@@ -867,7 +832,6 @@
 //                         className={inputClass}
 //                       />
 //                     </div>
-
 //                     <div>
 //                       <label className={labelClass}>
 //                         Notify Date{" "}
@@ -888,7 +852,6 @@
 //                         className={inputClass}
 //                       />
 //                     </div>
-
 //                     <div>
 //                       <label className={labelClass}>Log Out Date</label>
 //                       <input
@@ -903,7 +866,6 @@
 //                         className={inputClass}
 //                       />
 //                     </div>
-
 //                     <div>
 //                       <label className={labelClass}>Recall Date</label>
 //                       <input
@@ -923,12 +885,8 @@
 //               </div>
 //             </section>
 
-//             {/* =================================================
-//                 STEP 3 - COMMERCIALS
-//             ================================================== */}
+//             {/* STEP 3 - COMMERCIALS */}
 //             <section className={cardClass}>
-              
-
 //               <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 sm:p-6 xl:grid-cols-4">
 //                 <div>
 //                   <label className={labelClass}>
@@ -956,7 +914,6 @@
 //                     </select>
 //                   </div>
 //                 </div>
-
 //                 <div>
 //                   <label className={labelClass}>Rental Charge</label>
 //                   <div className="relative">
@@ -979,7 +936,6 @@
 //                     />
 //                   </div>
 //                 </div>
-
 //                 <div>
 //                   <label className={labelClass}>Deposit / Advance</label>
 //                   <div className="relative">
@@ -1002,7 +958,6 @@
 //                     />
 //                   </div>
 //                 </div>
-
 //                 <div>
 //                   <label className={labelClass}>Installation Charge</label>
 //                   <div className="relative">
@@ -1028,14 +983,10 @@
 //               </div>
 //             </section>
 
-//             {/* =================================================
-//                 STEP 4 & 5 - CARE CENTER + PATIENT
-//             ================================================== */}
+//             {/* STEP 4 & 5 - CARE CENTER + PATIENT */}
 //             <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
 //               {/* Care Center */}
 //               <section className={cardClass}>
-                
-
 //                 <div className="space-y-4 p-5 sm:p-6">
 //                   <div>
 //                     <label className={labelClass}>Care Center Name</label>
@@ -1079,7 +1030,6 @@
 //                         />
 //                       </div>
 //                     </div>
-
 //                     <div>
 //                       <label className={labelClass}>Alternative Mobile</label>
 //                       <div className="relative">
@@ -1141,7 +1091,6 @@
 //                         placeholder="Bed / room"
 //                       />
 //                     </div>
-
 //                     <div>
 //                       <label className={labelClass}>POC Name / Doctor</label>
 //                       <div className="relative">
@@ -1190,8 +1139,6 @@
 
 //               {/* Patient */}
 //               <section className={cardClass}>
-                
-
 //                 <div className="space-y-4 p-5 sm:p-6">
 //                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_120px]">
 //                     <div>
@@ -1218,7 +1165,6 @@
 //                         />
 //                       </div>
 //                     </div>
-
 //                     <div>
 //                       <label className={labelClass}>Age</label>
 //                       <input
@@ -1283,7 +1229,6 @@
 //                         />
 //                       </div>
 //                     </div>
-
 //                     <div>
 //                       <label className={labelClass}>Alternative Mobile</label>
 //                       <div className="relative">
@@ -1337,8 +1282,7 @@
 //                       />
 //                       <p className="text-[10.5px] leading-5 text-[#758980]">
 //                         Verify recipient contact and delivery location before
-//                         deploying the equipment to reduce service and pickup
-//                         errors.
+//                         deploying the equipment.
 //                       </p>
 //                     </div>
 //                   </div>
@@ -1346,26 +1290,17 @@
 //               </section>
 //             </div>
 
-//             {/* =================================================
-//                 STEP 6 - NOTES + PHOTOS
-//             ================================================== */}
+//             {/* STEP 6 - NOTES + PHOTOS */}
 //             <section className={cardClass}>
-              
-
 //               <div className="grid grid-cols-1 gap-5 p-5 sm:p-6 lg:grid-cols-[0.9fr_1.1fr]">
-//                 {/* Notes */}
-                
 //                 <div className="space-y-5">
-//                   {/* Transactions Notes */}
 //                   <div>
 //                     <label className={labelClass}>Transactions Notes</label>
-
 //                     <div className="relative">
 //                       <FileText
 //                         size={15}
 //                         className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
 //                       />
-
 //                       <textarea
 //                         rows={5}
 //                         value={formData?.notes || ""}
@@ -1376,21 +1311,18 @@
 //                           })
 //                         }
 //                         className={`${textareaClass} min-h-[130px] pl-10`}
-//                         placeholder="Installation notes, equipment condition, service requirements, pickup instructions..."
+//                         placeholder="Installation notes, equipment condition..."
 //                       />
 //                     </div>
 //                   </div>
 
-//                   {/* Internal Notes */}
 //                   <div>
 //                     <label className={labelClass}>Internal Notes</label>
-
 //                     <div className="relative">
 //                       <FileText
 //                         size={15}
 //                         className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
 //                       />
-
 //                       <textarea
 //                         rows={5}
 //                         value={formData?.internal_notes || ""}
@@ -1401,17 +1333,15 @@
 //                           })
 //                         }
 //                         className={`${textareaClass} min-h-[130px] pl-10`}
-//                         placeholder="Internal remarks, team instructions, follow-up details, billing notes..."
+//                         placeholder="Internal remarks, team instructions..."
 //                       />
 //                     </div>
 //                   </div>
 //                 </div>
 
-//                 {/* Upload */}
+//                 {/* Photos */}
 //                 <div className="rounded-[16px] border border-dashed border-[#CFE2D9] bg-[#F8FCFA] p-4">
 //                   <div className="mb-4 flex items-center justify-between gap-3">
-                    
-
 //                     {totalPhotos > 0 && (
 //                       <span className="inline-flex items-center gap-1 rounded-full border border-[#D7EEE4] bg-[#EAF7F0] px-2 py-1 text-[9px] font-bold text-[#087A57]">
 //                         <CheckCircle2 size={11} />
@@ -1427,7 +1357,7 @@
 //                         : "cursor-pointer hover:border-[#AFCFC0] hover:bg-[#FBFDFC]"
 //                     }`}
 //                   >
-//                     <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#EAF7F0] text-[#087A57] transition group-hover:scale-105">
+//                     <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#EAF7F0] text-[#087A57]">
 //                       <ImagePlus size={20} />
 //                     </div>
 //                     <p className="mt-3 text-[11px] font-extrabold text-[#496158]">
@@ -1449,6 +1379,7 @@
 //                     />
 //                   </label>
 
+//                   {/* Existing Photos */}
 //                   {existingPhotos.length > 0 && (
 //                     <div className="mt-4">
 //                       <div className="mb-2.5 flex items-center justify-between">
@@ -1459,7 +1390,6 @@
 //                           {existingPhotos.length} retained
 //                         </span>
 //                       </div>
-
 //                       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
 //                         {existingPhotos.map((photo, index) => (
 //                           <div
@@ -1472,22 +1402,18 @@
 //                                   ? photo.url
 //                                   : `${API_BASE_URL}${photo.url}`
 //                               }
-//                               alt={`Existing asset ${index + 1}`}
-//                               className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+//                               alt={`Existing ${index + 1}`}
+//                               className="h-full w-full object-cover"
 //                             />
-
-//                             <div className="absolute left-1.5 top-1.5 rounded-md bg-[#087A57]/90 px-2 py-1 text-[7.5px] font-extrabold uppercase tracking-wide text-white">
+//                             <div className="absolute left-1.5 top-1.5 rounded-md bg-[#087A57]/90 px-2 py-1 text-[7.5px] font-extrabold text-white">
 //                               Existing
 //                             </div>
-
 //                             <button
 //                               type="button"
 //                               onClick={() =>
 //                                 handleRemoveExistingPhoto(photo.id)
 //                               }
-//                               className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-white/95 text-rose-600 shadow-md transition hover:bg-rose-600 hover:text-white"
-//                               title="Remove existing photo"
-//                               aria-label={`Remove existing photo ${index + 1}`}
+//                               className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-white/95 text-rose-600 shadow-md hover:bg-rose-600 hover:text-white"
 //                             >
 //                               <Trash2 size={13} />
 //                             </button>
@@ -1497,6 +1423,7 @@
 //                     </div>
 //                   )}
 
+//                   {/* New Photos */}
 //                   {assetPhotos.length > 0 && (
 //                     <div className="mt-4">
 //                       <div className="mb-2.5 flex items-center justify-between">
@@ -1508,7 +1435,6 @@
 //                           {assetPhotos.length} ready
 //                         </span>
 //                       </div>
-
 //                       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
 //                         {assetPhotos.map((photo, index) => (
 //                           <div
@@ -1517,22 +1443,13 @@
 //                           >
 //                             <img
 //                               src={photo.previewUrl}
-//                               alt={`New asset ${index + 1}`}
-//                               className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+//                               alt={`New ${index + 1}`}
+//                               className="h-full w-full object-cover"
 //                             />
-
-//                             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/45 to-transparent px-2 pb-1.5 pt-5">
-//                               <span className="text-[8px] font-bold text-white/90">
-//                                 New Photo {index + 1}
-//                               </span>
-//                             </div>
-
 //                             <button
 //                               type="button"
 //                               onClick={() => handleRemovePhoto(photo.id)}
-//                               className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-white/95 text-rose-600 shadow-md transition hover:bg-rose-600 hover:text-white"
-//                               title="Remove new photo"
-//                               aria-label={`Remove new photo ${index + 1}`}
+//                               className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-white/95 text-rose-600 shadow-md hover:bg-rose-600 hover:text-white"
 //                             >
 //                               <Trash2 size={13} />
 //                             </button>
@@ -1545,9 +1462,7 @@
 //               </div>
 //             </section>
 
-//             {/* =================================================
-//                 FINAL ACTION / SUMMARY
-//             ================================================== */}
+//             {/* FINAL ACTION */}
 //             <div className="sticky bottom-3 z-20">
 //               <div className="flex flex-col gap-3 rounded-[18px] border border-[#DDE9E4] bg-white/95 px-4 py-3.5 shadow-[0_18px_45px_rgba(24,82,61,0.14)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:px-5">
 //                 <div className="flex items-center gap-3">
@@ -1556,14 +1471,13 @@
 //                   </div>
 //                   <div>
 //                     <p className="text-[10.5px] font-extrabold text-[#405B50]">
-//                       "Ready to update this rental record?"
+//                       Ready to update this rental record?
 //                     </p>
 //                     <p className="mt-0.5 text-[9px] text-[#98A8A1]">
 //                       Required fields are marked with an asterisk.
 //                     </p>
 //                   </div>
 //                 </div>
-
 //                 <div className="flex items-center gap-2.5">
 //                   <button
 //                     type="button"
@@ -1574,11 +1488,10 @@
 //                     <X size={14} />
 //                     Discard
 //                   </button>
-
 //                   <button
 //                     type="submit"
 //                     disabled={isSubmitting}
-//                     className="flex h-10 flex-[1.5] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#087A57] to-[#0A9668] px-5 text-[11px] font-extrabold text-white shadow-[0_9px_22px_rgba(8,122,87,0.22)] transition hover:-translate-y-[1px] hover:shadow-[0_12px_28px_rgba(8,122,87,0.27)] active:translate-y-0 disabled:pointer-events-none disabled:opacity-65 sm:flex-none"
+//                     className="flex h-10 flex-[1.5] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#087A57] to-[#0A9668] px-5 text-[11px] font-extrabold text-white shadow-[0_9px_22px_rgba(8,122,87,0.22)] transition hover:-translate-y-[1px] disabled:opacity-65 sm:flex-none"
 //                   >
 //                     {isSubmitting ? (
 //                       <>
@@ -1588,7 +1501,7 @@
 //                     ) : (
 //                       <>
 //                         <Save size={15} />
-//                         "Update Requisition"
+//                         Update Requisition
 //                       </>
 //                     )}
 //                   </button>
@@ -1601,6 +1514,8 @@
 //     </DashboardLayout>
 //   );
 // }
+
+
 
 
 
@@ -1854,7 +1769,7 @@ export default function RentalMasterEdit() {
   }, []);
 
   // ===============================
-  // WHEN DEVICE CHANGES → load its accessories
+  // WHEN DEVICE CHANGES → load accessories
   // ===============================
   useEffect(() => {
     if (!formData?.device_id || deviceModels.length === 0) {
@@ -1961,201 +1876,120 @@ export default function RentalMasterEdit() {
     setExistingPhotos((prev) => prev.filter((p) => p.id !== idToRemove));
   };
 
-  // const handleFormSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (isSubmitting) return;
-  //   setIsSubmitting(true);
-
-  //   try {
-  //     const token = localStorage.getItem("token");
-  //     const headers = {
-  //       ...(token && { Authorization: `Bearer ${token}` }),
-  //     };
-
-  //     const body = new FormData();
-
-  //     Object.keys(formData).forEach((key) => {
-  //       if (
-  //         [
-  //           "device",
-  //           "careCenter",
-  //           "asset_photos",
-  //           "accessories",
-  //           "createdAt",
-  //           "updatedAt",
-  //           "created_at",
-  //           "updated_at",
-  //         ].includes(key)
-  //       ) {
-  //         return;
-  //       }
-
-  //       const value = formData[key];
-  //       if (value === null || value === undefined) return;
-
-  //       if (key === "accessory_id" && Array.isArray(value)) {
-  //         body.append("accessory_id", JSON.stringify(value));
-  //         return;
-  //       }
-
-  //       body.append(key, value);
-  //     });
-
-  //     // Keep remaining existing photos
-  //     const remainingExisting = existingPhotos
-  //       .filter((p) => p.isExisting)
-  //       .map((p) => p.url);
-  //     body.append("existing_asset_photos", JSON.stringify(remainingExisting));
-
-  //     // New photos
-  //     assetPhotos.forEach((p) => body.append("asset_photos", p.file));
-
-  //     const response = await fetch(`${API_BASE_URL}/api/rentals/${id}`, {
-  //       method: "PUT",
-  //       headers,
-  //       body,
-  //     });
-
-  //     if (!response.ok) {
-  //       if (response.status === 401) {
-  //         alert("Authentication session expired. Please log in again.");
-  //         return;
-  //       }
-  //       const errorText = await response.text();
-  //       throw new Error(errorText || "Server rejected rental update.");
-  //     }
-
-  //     const result = await response.json();
-  //     if (!result.success) {
-  //       throw new Error(result.message || "Rental update failed.");
-  //     }
-
-  //     alert("Rental requisition updated successfully.");
-  //     navigate("/rental-master");
-  //   } catch (err) {
-  //     console.error("Rental update failed:", err);
-  //     alert(`Update failed: ${err.message}`);
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
-
   const handleFormSubmit = async (e) => {
-  e.preventDefault();
-  if (isSubmitting) return;
-  setIsSubmitting(true);
+    e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
-  try {
-    const token = localStorage.getItem("token");
-    const headers = {
-      ...(token && { Authorization: `Bearer ${token}` }),
-    };
+    try {
+      const token = localStorage.getItem("token");
+      const headers = {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      };
 
-    const body = new FormData();
+      const body = new FormData();
 
-    // Helper to clean dates
-    const cleanDate = (value) => {
-      if (!value || value === "" || value === "Invalid date") return null;
-      return value;
-    };
+      // Helper to clean dates
+      const cleanDate = (value) => {
+        if (!value || value === "" || value === "Invalid date") return null;
+        return value;
+      };
 
-    Object.keys(formData).forEach((key) => {
-      if (
-        [
-          "device",
-          "careCenter",
-          "asset_photos",
-          "accessories",
-          "createdAt",
-          "updatedAt",
-          "created_at",
-          "updated_at",
-        ].includes(key)
-      ) {
-        return;
+      Object.keys(formData).forEach((key) => {
+        if (
+          [
+            "device",
+            "careCenter",
+            "asset_photos",
+            "accessories",
+            "createdAt",
+            "updatedAt",
+            "created_at",
+            "updated_at",
+          ].includes(key)
+        ) {
+          return;
+        }
+
+        let value = formData[key];
+
+        // Clean date fields
+        if (
+          [
+            "record_date",
+            "login_date",
+            "notify_date",
+            "login_out_date",
+            "recall_date",
+          ].includes(key)
+        ) {
+          value = cleanDate(value);
+        }
+
+        // Skip null / undefined
+        if (value === null || value === undefined) return;
+
+        // Handle accessory_id array
+        if (key === "accessory_id" && Array.isArray(value)) {
+          body.append("accessory_id", JSON.stringify(value));
+          return;
+        }
+
+        body.append(key, value);
+      });
+
+      // Keep remaining existing photos
+      const remainingExisting = existingPhotos
+        .filter((p) => p.isExisting)
+        .map((p) => p.url);
+      body.append("existing_asset_photos", JSON.stringify(remainingExisting));
+
+      // New photos
+      assetPhotos.forEach((p) => body.append("asset_photos", p.file));
+
+      const response = await fetch(`${API_BASE_URL}/api/rentals/${id}`, {
+        method: "PUT",
+        headers,
+        body,
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          alert("Authentication session expired. Please log in again.");
+          return;
+        }
+        const errorText = await response.text();
+        throw new Error(errorText || "Server rejected rental update.");
       }
 
-      let value = formData[key];
-
-      // Clean date fields
-      if (
-        [
-          "record_date",
-          "login_date",
-          "notify_date",
-          "login_out_date",
-          "recall_date",
-        ].includes(key)
-      ) {
-        value = cleanDate(value);
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || "Rental update failed.");
       }
 
-      // Skip null / undefined
-      if (value === null || value === undefined) return;
-
-      // Handle accessory_id array
-      if (key === "accessory_id" && Array.isArray(value)) {
-        body.append("accessory_id", JSON.stringify(value));
-        return;
-      }
-
-      body.append(key, value);
-    });
-
-    // Keep remaining existing photos
-    const remainingExisting = existingPhotos
-      .filter((p) => p.isExisting)
-      .map((p) => p.url);
-    body.append("existing_asset_photos", JSON.stringify(remainingExisting));
-
-    // New photos
-    assetPhotos.forEach((p) => body.append("asset_photos", p.file));
-
-    const response = await fetch(`${API_BASE_URL}/api/rentals/${id}`, {
-      method: "PUT",
-      headers,
-      body,
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        alert("Authentication session expired. Please log in again.");
-        return;
-      }
-      const errorText = await response.text();
-      throw new Error(errorText || "Server rejected rental update.");
+      alert("Rental requisition updated successfully.");
+      navigate("/rental-master");
+    } catch (err) {
+      console.error("Rental update failed:", err);
+      alert(`Update failed: ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
+  };
 
-    const result = await response.json();
-    if (!result.success) {
-      throw new Error(result.message || "Rental update failed.");
-    }
-
-    alert("Rental requisition updated successfully.");
-    navigate("/rental-master");
-  } catch (err) {
-    console.error("Rental update failed:", err);
-    alert(`Update failed: ${err.message}`);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-  // Styles
+  // Violet/Purple Unified Design Styles
   const labelClass =
-    "mb-1.5 block text-[10.5px] font-extrabold uppercase tracking-[0.055em] text-[#526A60]";
+    "mb-1.5 block text-[10.5px] font-extrabold uppercase tracking-[0.055em] text-[#7F6EA6]";
   const inputClass =
-    "h-[46px] w-full rounded-xl border border-[#DDE9E4] bg-[#FBFDFC] px-3.5 text-[13px] font-semibold text-[#203D33] outline-none transition-all placeholder:font-normal placeholder:text-[#A9B8B1] hover:border-[#BED8CD] focus:border-[#0A9466] focus:bg-white focus:ring-4 focus:ring-[#0A9466]/[0.08]";
+    "h-[46px] w-full rounded-xl border border-[#E3D9FF] bg-[#FAF8FF] px-3.5 text-[13px] font-semibold text-[#22124D] outline-none transition-all placeholder:font-normal placeholder:text-[#A697C7] hover:border-[#D3C4FC] focus:border-[#5d2ed7] focus:bg-white focus:ring-4 focus:ring-[#5d2ed7]/[0.08]";
   const textareaClass =
-    "w-full rounded-xl border border-[#DDE9E4] bg-[#FBFDFC] px-3.5 py-3 text-[13px] font-medium text-[#203D33] outline-none transition-all placeholder:text-[#A9B8B1] hover:border-[#BED8CD] focus:border-[#0A9466] focus:bg-white focus:ring-4 focus:ring-[#0A9466]/[0.08] resize-none";
+    "w-full rounded-xl border border-[#E3D9FF] bg-[#FAF8FF] px-3.5 py-3 text-[13px] font-medium text-[#22124D] outline-none transition-all placeholder:text-[#A697C7] hover:border-[#D3C4FC] focus:border-[#5d2ed7] focus:bg-white focus:ring-4 focus:ring-[#5d2ed7]/[0.08] resize-none";
   const selectClass = `${inputClass} cursor-pointer`;
   const cardClass =
-    "overflow-hidden rounded-[20px] border border-[#E1ECE7] bg-white shadow-[0_8px_28px_rgba(25,92,67,0.055)]";
+    "overflow-hidden rounded-[20px] border border-[#E3D9FF] bg-white shadow-[0_8px_28px_rgba(93,46,215,0.045)]";
 
   const totalPhotos = existingPhotos.length + assetPhotos.length;
 
-  // Accessories options from selected device
   const accessoryOptions = deviceAccessories.map((acc) => ({
     value: acc,
     label: acc,
@@ -2164,15 +1998,15 @@ export default function RentalMasterEdit() {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="min-h-[72vh] bg-[#F5F9F7] flex items-center justify-center px-4">
-          <div className="w-full max-w-sm rounded-[24px] border border-[#E1ECE7] bg-white p-8 text-center shadow-[0_18px_45px_rgba(24,82,61,0.09)]">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EAF7F0] text-[#087A57]">
+        <div className="flex min-h-[72vh] items-center justify-center bg-[#FAF8FF] px-4">
+          <div className="w-full max-w-sm rounded-[24px] border border-[#E3D9FF] bg-white p-8 text-center shadow-[0_18px_45px_rgba(93,46,215,0.08)]">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F3EFFF] text-[#5d2ed7]">
               <Loader2 size={24} className="animate-spin" />
             </div>
-            <h3 className="mt-4 text-[15px] font-extrabold text-[#28463A]">
+            <h3 className="mt-4 text-[15px] font-extrabold text-[#22124D]">
               Loading Rental Requisition
             </h3>
-            <p className="mt-1.5 text-[10.5px] font-medium leading-5 text-[#8B9C94]">
+            <p className="mt-1.5 text-[10.5px] font-medium leading-5 text-[#8B7BB5]">
               Retrieving the current equipment, commercial, contact and photo
               details.
             </p>
@@ -2184,20 +2018,20 @@ export default function RentalMasterEdit() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-[#F5F9F7]">
+      <div className="min-h-screen bg-[#FAF8FF]">
         {/* HEADER */}
-        <div className="border-b border-[#E4EEE9] bg-white/95 px-4 py-5 backdrop-blur sm:px-6 lg:px-8">
+        <div className="border-b border-[#F3EFFF] bg-white/95 px-4 py-5 backdrop-blur sm:px-6 lg:px-8">
           <div className="mx-auto flex w-full max-w-[1450px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-4">
               <button
                 type="button"
                 onClick={() => navigate("/rental-master")}
-                className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#DCE9E3] bg-white text-[#6F837A] transition hover:border-[#BFD8CC] hover:bg-[#F3F9F6] hover:text-[#087A57]"
+                className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E3D9FF] bg-white text-[#553E82] transition hover:border-[#D3C4FC] hover:bg-[#FAF8FF] hover:text-[#5d2ed7]"
               >
                 <ArrowLeft size={18} />
               </button>
               <div>
-                <h1 className="text-[24px] font-extrabold tracking-[-0.035em] text-[#183A2F] sm:text-[28px]">
+                <h1 className="text-[24px] font-extrabold tracking-[-0.035em] text-[#22124D] sm:text-[28px]">
                   Edit Rental Requisition
                 </h1>
               </div>
@@ -2206,7 +2040,7 @@ export default function RentalMasterEdit() {
               type="button"
               onClick={() => navigate("/rental-master")}
               disabled={isSubmitting}
-              className="hidden h-10 items-center gap-2 rounded-xl border border-[#DDE8E3] bg-white px-4 text-[11px] font-bold text-[#64776F] transition hover:bg-[#F5F9F7] disabled:opacity-50 sm:flex"
+              className="hidden h-10 items-center gap-2 rounded-xl border border-[#E3D9FF] bg-white px-4 text-[11px] font-bold text-[#553E82] transition hover:bg-[#FAF8FF] hover:text-[#5d2ed7] disabled:opacity-50 sm:flex"
             >
               <ArrowLeft size={14} />
               Rental Master
@@ -2278,7 +2112,7 @@ export default function RentalMasterEdit() {
               <div className="p-5 sm:p-6">
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                   {/* Device */}
-                  <div className="rounded-[16px] border border-[#DCEBE4] bg-[#F8FCFA] p-4">
+                  <div className="rounded-[16px] border border-[#E8DEFF] bg-[#FAF8FF] p-4">
                     <label className={labelClass}>
                       Device Model <span className="text-rose-500">*</span>
                     </label>
@@ -2289,7 +2123,7 @@ export default function RentalMasterEdit() {
                         setFormData({
                           ...formData,
                           device_id: e.target.value,
-                          accessory_id: [], // clear on device change
+                          accessory_id: [],
                         });
                       }}
                       className={selectClass}
@@ -2304,7 +2138,7 @@ export default function RentalMasterEdit() {
                   </div>
 
                   {/* Serial No. */}
-                  <div className="rounded-[16px] border border-[#DCEBE4] bg-[#F8FCFA] p-4">
+                  <div className="rounded-[16px] border border-[#E8DEFF] bg-[#FAF8FF] p-4">
                     <label className={labelClass}>
                       Serial No. <span className="text-rose-500">*</span>
                     </label>
@@ -2323,8 +2157,8 @@ export default function RentalMasterEdit() {
                     />
                   </div>
 
-                  {/* Accessories – from selected device */}
-                  <div className="rounded-[16px] border border-[#DCEBE4] bg-[#F8FCFA] p-4">
+                  {/* Accessories */}
+                  <div className="rounded-[16px] border border-[#E8DEFF] bg-[#FAF8FF] p-4">
                     <label className={labelClass}>Select Accessories</label>
                     <Select
                       isMulti
@@ -2358,16 +2192,16 @@ export default function RentalMasterEdit() {
                           ...provided,
                           minHeight: "46px",
                           borderRadius: "12px",
-                          borderColor: state.isFocused ? "#0A9466" : "#DDE9E4",
+                          borderColor: state.isFocused ? "#5d2ed7" : "#E3D9FF",
                           backgroundColor: state.isFocused
                             ? "#FFFFFF"
-                            : "#FBFDFC",
+                            : "#FAF8FF",
                           boxShadow: state.isFocused
-                            ? "0 0 0 4px rgba(10,148,102,0.08)"
+                            ? "0 0 0 4px rgba(93,46,215,0.08)"
                             : "none",
                           fontSize: "13px",
                           fontWeight: 600,
-                          "&:hover": { borderColor: "#BED8CD" },
+                          "&:hover": { borderColor: "#D3C4FC" },
                         }),
                         valueContainer: (provided) => ({
                           ...provided,
@@ -2375,22 +2209,22 @@ export default function RentalMasterEdit() {
                         }),
                         multiValue: (provided) => ({
                           ...provided,
-                          backgroundColor: "#E8F6EF",
+                          backgroundColor: "#F3EFFF",
                           borderRadius: "8px",
-                          border: "1px solid #D7EEE4",
+                          border: "1px solid #E8DEFF",
                         }),
                         multiValueLabel: (provided) => ({
                           ...provided,
-                          color: "#087A57",
+                          color: "#5d2ed7",
                           fontWeight: 700,
                           fontSize: "11px",
                         }),
                         multiValueRemove: (provided) => ({
                           ...provided,
-                          color: "#087A57",
+                          color: "#5d2ed7",
                           borderRadius: "0 8px 8px 0",
                           ":hover": {
-                            backgroundColor: "#087A57",
+                            backgroundColor: "#5d2ed7",
                             color: "white",
                           },
                         }),
@@ -2399,8 +2233,8 @@ export default function RentalMasterEdit() {
                           zIndex: 50,
                           borderRadius: "12px",
                           overflow: "hidden",
-                          border: "1px solid #E1ECE7",
-                          boxShadow: "0 15px 40px rgba(15,72,53,0.12)",
+                          border: "1px solid #E3D9FF",
+                          boxShadow: "0 15px 40px rgba(37,15,97,0.12)",
                         }),
                       }}
                     />
@@ -2408,7 +2242,7 @@ export default function RentalMasterEdit() {
                 </div>
 
                 {/* Dates */}
-                <div className="mt-5 border-t border-[#EDF3F0] pt-5">
+                <div className="mt-5 border-t border-[#F3EFFF] pt-5">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                     <div>
                       <label className={labelClass}>Record Date</label>
@@ -2504,7 +2338,7 @@ export default function RentalMasterEdit() {
                   <div className="relative">
                     <CreditCard
                       size={15}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                     />
                     <select
                       required
@@ -2528,7 +2362,7 @@ export default function RentalMasterEdit() {
                   <div className="relative">
                     <IndianRupee
                       size={15}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                     />
                     <input
                       type="number"
@@ -2550,7 +2384,7 @@ export default function RentalMasterEdit() {
                   <div className="relative">
                     <IndianRupee
                       size={15}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                     />
                     <input
                       type="number"
@@ -2572,7 +2406,7 @@ export default function RentalMasterEdit() {
                   <div className="relative">
                     <IndianRupee
                       size={15}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                     />
                     <input
                       type="number"
@@ -2623,7 +2457,7 @@ export default function RentalMasterEdit() {
                       <div className="relative">
                         <Phone
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2644,7 +2478,7 @@ export default function RentalMasterEdit() {
                       <div className="relative">
                         <Phone
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2667,7 +2501,7 @@ export default function RentalMasterEdit() {
                     <div className="relative">
                       <MapPin
                         size={15}
-                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
+                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#9C8AC7]"
                       />
                       <textarea
                         rows={3}
@@ -2705,7 +2539,7 @@ export default function RentalMasterEdit() {
                       <div className="relative">
                         <Stethoscope
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2757,7 +2591,7 @@ export default function RentalMasterEdit() {
                       <div className="relative">
                         <UserRound
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2799,7 +2633,7 @@ export default function RentalMasterEdit() {
                     <div className="relative">
                       <UsersRound
                         size={15}
-                        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                       />
                       <input
                         type="text"
@@ -2822,7 +2656,7 @@ export default function RentalMasterEdit() {
                       <div className="relative">
                         <Phone
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2843,7 +2677,7 @@ export default function RentalMasterEdit() {
                       <div className="relative">
                         <Phone
                           size={15}
-                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#89A097]"
+                          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                         />
                         <input
                           type="text"
@@ -2866,7 +2700,7 @@ export default function RentalMasterEdit() {
                     <div className="relative">
                       <MapPin
                         size={15}
-                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
+                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#9C8AC7]"
                       />
                       <textarea
                         rows={4}
@@ -2883,13 +2717,13 @@ export default function RentalMasterEdit() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-[#E2EEE8] bg-[#F7FBF9] px-4 py-3">
+                  <div className="rounded-xl border border-[#E8DEFF] bg-[#FAF8FF] px-4 py-3">
                     <div className="flex items-start gap-2.5">
                       <HeartHandshake
                         size={16}
-                        className="mt-0.5 shrink-0 text-[#087A57]"
+                        className="mt-0.5 shrink-0 text-[#5d2ed7]"
                       />
-                      <p className="text-[10.5px] leading-5 text-[#758980]">
+                      <p className="text-[10.5px] leading-5 text-[#7F6EA6]">
                         Verify recipient contact and delivery location before
                         deploying the equipment.
                       </p>
@@ -2908,7 +2742,7 @@ export default function RentalMasterEdit() {
                     <div className="relative">
                       <FileText
                         size={15}
-                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
+                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#9C8AC7]"
                       />
                       <textarea
                         rows={5}
@@ -2930,7 +2764,7 @@ export default function RentalMasterEdit() {
                     <div className="relative">
                       <FileText
                         size={15}
-                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#89A097]"
+                        className="pointer-events-none absolute left-3.5 top-3.5 text-[#9C8AC7]"
                       />
                       <textarea
                         rows={5}
@@ -2949,10 +2783,10 @@ export default function RentalMasterEdit() {
                 </div>
 
                 {/* Photos */}
-                <div className="rounded-[16px] border border-dashed border-[#CFE2D9] bg-[#F8FCFA] p-4">
+                <div className="rounded-[16px] border border-dashed border-[#D3C4FC] bg-[#FAF8FF] p-4">
                   <div className="mb-4 flex items-center justify-between gap-3">
                     {totalPhotos > 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-[#D7EEE4] bg-[#EAF7F0] px-2 py-1 text-[9px] font-bold text-[#087A57]">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-[#E8DEFF] bg-[#F3EFFF] px-2 py-1 text-[9px] font-bold text-[#5d2ed7]">
                         <CheckCircle2 size={11} />
                         {totalPhotos} Attached
                       </span>
@@ -2960,21 +2794,21 @@ export default function RentalMasterEdit() {
                   </div>
 
                   <label
-                    className={`group flex flex-col items-center justify-center rounded-[14px] border border-[#DCEAE3] bg-white px-4 py-6 text-center transition ${
+                    className={`group flex flex-col items-center justify-center rounded-[14px] border border-[#E3D9FF] bg-white px-4 py-6 text-center transition ${
                       totalPhotos >= 10
                         ? "cursor-not-allowed opacity-60"
-                        : "cursor-pointer hover:border-[#AFCFC0] hover:bg-[#FBFDFC]"
+                        : "cursor-pointer hover:border-[#D3C4FC] hover:bg-[#FAF8FF]"
                     }`}
                   >
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#EAF7F0] text-[#087A57]">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F3EFFF] text-[#5d2ed7] transition group-hover:scale-105">
                       <ImagePlus size={20} />
                     </div>
-                    <p className="mt-3 text-[11px] font-extrabold text-[#496158]">
+                    <p className="mt-3 text-[11px] font-extrabold text-[#22124D]">
                       {totalPhotos >= 10
                         ? "Maximum photo limit reached"
                         : "Add handover photographs"}
                     </p>
-                    <p className="mt-1 text-[9.5px] text-[#98A8A1]">
+                    <p className="mt-1 text-[9.5px] text-[#A697C7]">
                       {totalPhotos}/10 total · {existingPhotos.length} existing
                       · {assetPhotos.length} new
                     </p>
@@ -2992,10 +2826,10 @@ export default function RentalMasterEdit() {
                   {existingPhotos.length > 0 && (
                     <div className="mt-4">
                       <div className="mb-2.5 flex items-center justify-between">
-                        <p className="text-[9px] font-extrabold uppercase tracking-[0.08em] text-[#73877E]">
+                        <p className="text-[9px] font-extrabold uppercase tracking-[0.08em] text-[#7F6EA6]">
                           Existing Photos
                         </p>
-                        <span className="text-[9px] font-bold text-[#98A8A1]">
+                        <span className="text-[9px] font-bold text-[#A697C7]">
                           {existingPhotos.length} retained
                         </span>
                       </div>
@@ -3003,7 +2837,7 @@ export default function RentalMasterEdit() {
                         {existingPhotos.map((photo, index) => (
                           <div
                             key={photo.id}
-                            className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-[#DDE9E4] bg-white shadow-sm"
+                            className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-[#E3D9FF] bg-white shadow-sm"
                           >
                             <img
                               src={
@@ -3012,9 +2846,9 @@ export default function RentalMasterEdit() {
                                   : `${API_BASE_URL}${photo.url}`
                               }
                               alt={`Existing ${index + 1}`}
-                              className="h-full w-full object-cover"
+                              className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
                             />
-                            <div className="absolute left-1.5 top-1.5 rounded-md bg-[#087A57]/90 px-2 py-1 text-[7.5px] font-extrabold text-white">
+                            <div className="absolute left-1.5 top-1.5 rounded-md bg-[#5d2ed7]/90 px-2 py-1 text-[7.5px] font-extrabold text-white">
                               Existing
                             </div>
                             <button
@@ -3022,7 +2856,7 @@ export default function RentalMasterEdit() {
                               onClick={() =>
                                 handleRemoveExistingPhoto(photo.id)
                               }
-                              className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-white/95 text-rose-600 shadow-md hover:bg-rose-600 hover:text-white"
+                              className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-white/95 text-rose-600 shadow-md transition hover:bg-rose-600 hover:text-white"
                             >
                               <Trash2 size={13} />
                             </button>
@@ -3036,10 +2870,10 @@ export default function RentalMasterEdit() {
                   {assetPhotos.length > 0 && (
                     <div className="mt-4">
                       <div className="mb-2.5 flex items-center justify-between">
-                        <p className="text-[9px] font-extrabold uppercase tracking-[0.08em] text-[#087A57]">
+                        <p className="text-[9px] font-extrabold uppercase tracking-[0.08em] text-[#5d2ed7]">
                           New Photos
                         </p>
-                        <span className="inline-flex items-center gap-1 rounded-full border border-[#D7EEE4] bg-[#EAF7F0] px-2 py-1 text-[9px] font-bold text-[#087A57]">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-[#E8DEFF] bg-[#F3EFFF] px-2 py-1 text-[9px] font-bold text-[#5d2ed7]">
                           <CheckCircle2 size={11} />
                           {assetPhotos.length} ready
                         </span>
@@ -3048,17 +2882,17 @@ export default function RentalMasterEdit() {
                         {assetPhotos.map((photo, index) => (
                           <div
                             key={photo.id}
-                            className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-[#DDE9E4] bg-white shadow-sm"
+                            className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-[#E3D9FF] bg-white shadow-sm"
                           >
                             <img
                               src={photo.previewUrl}
                               alt={`New ${index + 1}`}
-                              className="h-full w-full object-cover"
+                              className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
                             />
                             <button
                               type="button"
                               onClick={() => handleRemovePhoto(photo.id)}
-                              className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-white/95 text-rose-600 shadow-md hover:bg-rose-600 hover:text-white"
+                              className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-white/95 text-rose-600 shadow-md transition hover:bg-rose-600 hover:text-white"
                             >
                               <Trash2 size={13} />
                             </button>
@@ -3073,16 +2907,16 @@ export default function RentalMasterEdit() {
 
             {/* FINAL ACTION */}
             <div className="sticky bottom-3 z-20">
-              <div className="flex flex-col gap-3 rounded-[18px] border border-[#DDE9E4] bg-white/95 px-4 py-3.5 shadow-[0_18px_45px_rgba(24,82,61,0.14)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:px-5">
+              <div className="flex flex-col gap-3 rounded-[18px] border border-[#E3D9FF] bg-white/95 px-4 py-3.5 shadow-[0_18px_45px_rgba(93,46,215,0.12)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:px-5">
                 <div className="flex items-center gap-3">
-                  <div className="hidden h-9 w-9 items-center justify-center rounded-xl bg-[#EAF7F0] text-[#087A57] sm:flex">
+                  <div className="hidden h-9 w-9 items-center justify-center rounded-xl bg-[#F3EFFF] text-[#5d2ed7] sm:flex">
                     <ShieldCheck size={17} />
                   </div>
                   <div>
-                    <p className="text-[10.5px] font-extrabold text-[#405B50]">
+                    <p className="text-[10.5px] font-extrabold text-[#22124D]">
                       Ready to update this rental record?
                     </p>
-                    <p className="mt-0.5 text-[9px] text-[#98A8A1]">
+                    <p className="mt-0.5 text-[9px] text-[#7F6EA6]">
                       Required fields are marked with an asterisk.
                     </p>
                   </div>
@@ -3092,7 +2926,7 @@ export default function RentalMasterEdit() {
                     type="button"
                     onClick={() => navigate("/rental-master")}
                     disabled={isSubmitting}
-                    className="flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-[#DCE7E2] bg-white px-4 text-[11px] font-bold text-[#687B72] transition hover:bg-[#F5F9F7] disabled:opacity-50 sm:flex-none"
+                    className="flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-[#E3D9FF] bg-white px-4 text-[11px] font-bold text-[#553E82] transition hover:bg-[#FAF8FF] hover:text-[#5d2ed7] disabled:opacity-50 sm:flex-none"
                   >
                     <X size={14} />
                     Discard
@@ -3100,7 +2934,7 @@ export default function RentalMasterEdit() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex h-10 flex-[1.5] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#087A57] to-[#0A9668] px-5 text-[11px] font-extrabold text-white shadow-[0_9px_22px_rgba(8,122,87,0.22)] transition hover:-translate-y-[1px] disabled:opacity-65 sm:flex-none"
+                    className="flex h-10 flex-[1.5] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#421E9F] to-[#5d2ed7] px-5 text-[11px] font-extrabold text-white shadow-[0_9px_22px_rgba(93,46,215,0.22)] transition hover:-translate-y-[1px] hover:shadow-[0_12px_28px_rgba(93,46,215,0.28)] active:translate-y-0 disabled:opacity-65 sm:flex-none"
                   >
                     {isSubmitting ? (
                       <>

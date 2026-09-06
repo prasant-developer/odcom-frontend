@@ -1,4 +1,12 @@
-// import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+
+
+// import React, {
+//   useState,
+//   useEffect,
+//   useCallback,
+//   useMemo,
+//   useRef,
+// } from "react";
 // import DashboardLayout from "../Admin/Layout";
 // import { useNavigate, Link } from "react-router-dom";
 // import {
@@ -13,6 +21,7 @@
 //   Clock3,
 //   Eye,
 //   Filter,
+//   Hash,
 //   Package,
 //   Pencil,
 //   Plus,
@@ -85,9 +94,7 @@
 
 //   // Pagination is persisted so returning from View/Edit stays on the same page.
 //   const [currentPage, setCurrentPage] = useState(
-//     Number(savedFilters.currentPage) > 0
-//       ? Number(savedFilters.currentPage)
-//       : 1,
+//     Number(savedFilters.currentPage) > 0 ? Number(savedFilters.currentPage) : 1,
 //   );
 //   const recordsPerPage = 10;
 //   const hasInitializedFilters = useRef(false);
@@ -573,352 +580,407 @@
 //       <div className="min-h-screen bg-[#F5F8F6] px-4 py-5 sm:px-6 lg:px-7">
 //         <div className="mx-auto w-full max-w-[1540px] space-y-5">
 //           {/* =====================================================
-//               PREMIUM PAGE HEADER
-//           ====================================================== */}
+//     RENTAL MASTER - COMBINED CONTROL CARD
+// ====================================================== */}
 //           <section className="relative overflow-hidden rounded-[24px] border border-[#DDEBE5] bg-white shadow-[0_10px_35px_rgba(29,91,68,0.06)]">
-//             <div className="pointer-events-none absolute inset-0">
+//             {/* Background decoration */}
+//             <div className="pointer-events-none absolute inset-0 overflow-hidden">
 //               <div className="absolute -right-24 -top-28 h-72 w-72 rounded-full bg-[#0A9668]/[0.055] blur-3xl" />
 //               <div className="absolute -bottom-24 left-[32%] h-56 w-56 rounded-full bg-[#087A57]/[0.035] blur-3xl" />
 //             </div>
 
-//             <div className="relative z-10 flex flex-col gap-6 px-5 py-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
-//               <div className="flex min-w-0 items-start gap-4">
-//                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] bg-gradient-to-br from-[#087A57] to-[#0A9668] text-white shadow-[0_10px_24px_rgba(8,122,87,0.22)]">
-//                   <Package size={23} strokeWidth={2.1} />
-//                 </div>
-
-//                 <div className="min-w-0">
-//                   <div className="mb-1 flex flex-wrap items-center gap-2">
-//                     <span className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-[#0A8B61]">
-//                       Equipment Operations
-//                     </span>
-//                     <span className="h-1 w-1 rounded-full bg-[#B5C8C0]" />
-//                     <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-slate-400">
-//                       Rental Control
-//                     </span>
+//             <div className="relative z-10">
+//               {/* =================================================
+//         HEADER
+//     ================================================= */}
+//               <div className="flex flex-col gap-6 px-5 py-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+//                 {/* Left */}
+//                 <div className="flex min-w-0 items-start gap-4">
+//                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] bg-gradient-to-br from-[#087A57] to-[#0A9668] text-white shadow-[0_10px_24px_rgba(8,122,87,0.22)]">
+//                     <Package size={23} strokeWidth={2.1} />
 //                   </div>
 
-//                   <h1 className="text-[23px] font-extrabold tracking-[-0.035em] text-[#183A2F] sm:text-[26px]">
-//                     Rental Master
-//                   </h1>
-//                   <p className="mt-1 max-w-[620px] text-[12px] font-medium leading-5 text-[#7D9188]">
-//                     Track deployed medical equipment, rental duration, status and operational actions from one workspace.
-//                   </p>
+//                   <div className="min-w-0">
+//                     <div className="mb-1 flex flex-wrap items-center gap-2">
+//                       <span className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-[#0A8B61]">
+//                         Equipment Operations
+//                       </span>
+
+//                       <span className="h-1 w-1 rounded-full bg-[#B5C8C0]" />
+
+//                       <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-slate-400">
+//                         Rental Control
+//                       </span>
+//                     </div>
+
+//                     <h1 className="text-[23px] font-extrabold tracking-[-0.035em] text-[#183A2F] sm:text-[26px]">
+//                       Rental Master
+//                     </h1>
+//                   </div>
+//                 </div>
+
+//                 {/* Right actions */}
+//                 <div className="flex flex-wrap items-center gap-2.5">
+//                   {/* Calculator */}
+//                   <button
+//                     type="button"
+//                     onClick={openCalcModal}
+//                     className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#D7E9E0] bg-[#F1F9F5] text-[#087A57] shadow-sm transition hover:-translate-y-[1px] hover:border-[#B8D9CA] hover:bg-[#EAF7F0] hover:shadow-md"
+//                     title="Temporary rental days calculator"
+//                     aria-label="Open temporary rental days calculator"
+//                   >
+//                     <Calculator size={17} strokeWidth={2.2} />
+//                   </button>
+
+//                   {/* Refresh */}
+//                   <button
+//                     type="button"
+//                     onClick={fetchRentals}
+//                     disabled={loading}
+//                     className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-[#DCE9E4] bg-white px-4 text-[11px] font-bold text-[#61776E] shadow-sm transition hover:border-[#C3DAD0] hover:bg-[#F8FBF9] hover:text-[#087A57] disabled:cursor-not-allowed disabled:opacity-50"
+//                     title="Refresh rental records"
+//                   >
+//                     <RefreshCw
+//                       size={15}
+//                       className={loading ? "animate-spin" : ""}
+//                     />
+//                     Refresh
+//                   </button>
+
+//                   {/* New requisition */}
+//                   <button
+//                     type="button"
+//                     onClick={() => navigate("/rental-requisition")}
+//                     className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#087A57] to-[#0A9668] px-5 text-[11px] font-extrabold text-white shadow-[0_9px_22px_rgba(8,122,87,0.22)] transition hover:-translate-y-[1px] hover:shadow-[0_12px_28px_rgba(8,122,87,0.28)] active:translate-y-0"
+//                   >
+//                     <Plus size={16} strokeWidth={2.5} />
+//                     Log New Requisition
+//                   </button>
 //                 </div>
 //               </div>
 
-//               <div className="flex flex-wrap items-center gap-2.5">
-//                 <button
-//                   type="button"
-//                   onClick={openCalcModal}
-//                   className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#D7E9E0] bg-[#F1F9F5] text-[#087A57] shadow-sm transition hover:-translate-y-[1px] hover:border-[#B8D9CA] hover:bg-[#EAF7F0] hover:shadow-md"
-//                   title="Rental days calculator"
-//                   aria-label="Open rental days calculator"
-//                 >
-//                   <Calculator size={17} strokeWidth={2.2} />
-//                 </button>
+//               {/* =================================================
+//         DIVIDER
+//     ================================================= */}
+//               <div className="mx-5 border-t border-[#EDF3F0] lg:mx-6" />
 
-//                 <button
-//                   type="button"
-//                   onClick={fetchRentals}
-//                   disabled={loading}
-//                   className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-[#DCE9E4] bg-white px-4 text-[11px] font-bold text-[#61776E] shadow-sm transition hover:border-[#C3DAD0] hover:bg-[#F8FBF9] hover:text-[#087A57] disabled:cursor-not-allowed disabled:opacity-50"
-//                   title="Refresh rental records"
-//                 >
-//                   <RefreshCw
-//                     size={15}
-//                     className={loading ? "animate-spin" : ""}
-//                   />
-//                   Refresh
-//                 </button>
+//               {/* =================================================
+//         FILTER HEADER
+//     ================================================= */}
+//               <div className="px-5 pt-4 lg:px-6">
+//                 <div className="flex flex-wrap items-center justify-between gap-3">
+//                   {/* Active filters */}
+//                   {activeFilterCount > 0 && (
+//                     <div className="flex items-center gap-2">
+//                       <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D8EEE4] bg-[#EDF8F3] px-2.5 py-1 text-[9px] font-extrabold text-[#087A57]">
+//                         <Filter size={11} />
+//                         {activeFilterCount} active{" "}
+//                         {activeFilterCount === 1 ? "filter" : "filters"}
+//                       </span>
 
-//                 <button
-//                   onClick={() => navigate("/rental-requisition")}
-//                   className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#087A57] to-[#0A9668] px-5 text-[11px] font-extrabold text-white shadow-[0_9px_22px_rgba(8,122,87,0.22)] transition hover:-translate-y-[1px] hover:shadow-[0_12px_28px_rgba(8,122,87,0.28)] active:translate-y-0"
-//                 >
-//                   <Plus size={16} strokeWidth={2.5} />
-//                   Log New Requisition
-//                 </button>
-//               </div>
-//             </div>
-
-//           </section>
-
-//           {/* =====================================================
-//               FILTER CONTROL PANEL
-//           ====================================================== */}
-//           <section className="rounded-[20px] border border-[#DDE9E4] bg-white p-4 shadow-[0_8px_28px_rgba(29,91,68,0.045)]">
-//             <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-//               <div className="flex items-center gap-2.5">
-//                 <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#EEF8F3] text-[#087A57]">
-//                   <SlidersHorizontal size={15} />
-//                 </div>
-//                 <div>
-//                   <p className="text-[11px] font-extrabold text-[#334E43]">Find rental records</p>
-//                   <p className="mt-0.5 text-[9px] font-medium text-slate-400">
-//                     Search or narrow the master list using operational filters.
-//                   </p>
+//                       <button
+//                         type="button"
+//                         onClick={handleReset}
+//                         className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-[9px] font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+//                       >
+//                         <RotateCcw size={12} />
+//                         Clear all
+//                       </button>
+//                     </div>
+//                   )}
 //                 </div>
 //               </div>
 
-//               {activeFilterCount > 0 && (
-//                 <div className="flex items-center gap-2">
-//                   <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D8EEE4] bg-[#EDF8F3] px-2.5 py-1 text-[9px] font-extrabold text-[#087A57]">
-//                     <Filter size={11} />
-//                     {activeFilterCount} active {activeFilterCount === 1 ? "filter" : "filters"}
-//                   </span>
+//               {/* =================================================
+//         MAIN FILTERS
+//     ================================================= */}
+//               <div className="px-5 pb-4 pt-3 lg:px-6">
+//                 <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-[minmax(300px,1.8fr)_repeat(5,minmax(130px,1fr))_auto]">
+//                   {/* Search */}
+//                   <div className="relative">
+//                     <Search
+//                       size={16}
+//                       className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8EA49B]"
+//                     />
 
+//                     <input
+//                       type="text"
+//                       placeholder="Find rental records"
+//                       value={searchTerm}
+//                       onChange={(e) => setSearchTerm(e.target.value)}
+//                       className="h-11 w-full rounded-xl border border-[#DCEAE4] bg-[#FBFDFC] pl-10 pr-10 text-[11px] font-semibold text-[#415B50] outline-none transition placeholder:font-medium placeholder:text-[#A4B5AE] hover:border-[#C7DBD2] focus:border-[#0A8B61] focus:bg-white focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
+//                     />
+
+//                     {searchTerm && (
+//                       <button
+//                         type="button"
+//                         onClick={() => setSearchTerm("")}
+//                         className="absolute right-2.5 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+//                         aria-label="Clear search"
+//                         title="Clear search"
+//                       >
+//                         <X size={13} />
+//                       </button>
+//                     )}
+//                   </div>
+
+//                   {/* Care Center */}
+//                   <select
+//                     value={careCenterFilter}
+//                     onChange={(e) => setCareCenterFilter(e.target.value)}
+//                     className={selectClass}
+//                     title="Filter by care center"
+//                   >
+//                     <option value="All">Care Center · All</option>
+
+//                     {careCenters.map((center) => (
+//                       <option
+//                         key={center.carecenter_id}
+//                         value={String(center.carecenter_id)}
+//                       >
+//                         {center.carecenter_name}
+//                       </option>
+//                     ))}
+//                   </select>
+
+//                   {/* Deal */}
+//                   <select
+//                     value={dealTypeFilter}
+//                     onChange={(e) => setDealTypeFilter(e.target.value)}
+//                     className={selectClass}
+//                     title="Filter by deal type"
+//                   >
+//                     <option value="All">Deal · All</option>
+
+//                     {uniqueDealTypes.map((type) => (
+//                       <option key={type} value={type}>
+//                         {type}
+//                       </option>
+//                     ))}
+
+//                     {!uniqueDealTypes.includes("B2B") && (
+//                       <option value="B2B">B2B</option>
+//                     )}
+
+//                     {!uniqueDealTypes.includes("B2C") && (
+//                       <option value="B2C">B2C</option>
+//                     )}
+//                   </select>
+
+//                   {/* Unit */}
+//                   <select
+//                     value={unitTypeFilter}
+//                     onChange={(e) => setUnitTypeFilter(e.target.value)}
+//                     className={selectClass}
+//                     title="Filter by unit"
+//                   >
+//                     <option value="All">Unit · All</option>
+
+//                     {uniqueUnitTypes.map((type) => (
+//                       <option key={type} value={type}>
+//                         {type}
+//                       </option>
+//                     ))}
+
+//                     {!uniqueUnitTypes.includes("BWF") && (
+//                       <option value="BWF">BWF</option>
+//                     )}
+
+//                     {!uniqueUnitTypes.includes("ODCOM") && (
+//                       <option value="ODCOM">ODCOM</option>
+//                     )}
+//                   </select>
+
+//                   {/* Mode */}
+//                   <select
+//                     value={modeTypeFilter}
+//                     onChange={(e) => setModeTypeFilter(e.target.value)}
+//                     className={selectClass}
+//                     title="Filter by payment mode"
+//                   >
+//                     <option value="All">Mode · All</option>
+
+//                     {uniqueModeTypes.map((type) => (
+//                       <option key={type} value={type}>
+//                         {type}
+//                       </option>
+//                     ))}
+
+//                     {!uniqueModeTypes.includes("Prepaid") && (
+//                       <option value="Prepaid">Prepaid</option>
+//                     )}
+
+//                     {!uniqueModeTypes.includes("Postpaid") && (
+//                       <option value="Postpaid">Postpaid</option>
+//                     )}
+//                   </select>
+
+//                   {/* Status */}
+//                   <select
+//                     value={statusFilter}
+//                     onChange={(e) => setStatusFilter(e.target.value)}
+//                     className={selectClass}
+//                     title="Filter by rental status"
+//                   >
+//                     <option value="All">Status · All</option>
+//                     <option value="ACTIVE">Active</option>
+
+//                     <option value="INACTIVE">Inactive</option>
+//                     <option value="PENDING">Active/Inactive</option>
+//                     <option value="CLOSED">Closed</option>
+//                   </select>
+
+//                   {/* Reset */}
 //                   <button
 //                     type="button"
 //                     onClick={handleReset}
-//                     className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-[9px] font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+//                     disabled={activeFilterCount === 0}
+//                     className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-[#DCE9E4] bg-white px-3 text-[10px] font-bold text-[#70867C] transition hover:bg-[#F7FAF8] hover:text-[#087A57] disabled:cursor-not-allowed disabled:opacity-40"
+//                     title="Reset filters"
 //                   >
-//                     <RotateCcw size={12} />
-//                     Clear all
+//                     <RotateCcw size={13} />
+//                     Reset
 //                   </button>
 //                 </div>
-//               )}
-//             </div>
 
-//             <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-[minmax(300px,1.8fr)_repeat(5,minmax(130px,1fr))_auto]">
-//               {/* Search */}
-//               <div className="relative">
-//                 <Search
-//                   size={16}
-//                   className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8EA49B]"
-//                 />
-//                 <input
-//                   type="text"
-//                   placeholder="Search patient, phone, equipment, care center..."
-//                   value={searchTerm}
-//                   onChange={(e) => setSearchTerm(e.target.value)}
-//                   className="h-11 w-full rounded-xl border border-[#DCEAE4] bg-[#FBFDFC] pl-10 pr-10 text-[11px] font-semibold text-[#415B50] outline-none transition placeholder:font-medium placeholder:text-[#A4B5AE] hover:border-[#C7DBD2] focus:border-[#0A8B61] focus:bg-white focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
-//                 />
-//                 {searchTerm && (
-//                   <button
-//                     type="button"
-//                     onClick={() => setSearchTerm("")}
-//                     className="absolute right-2.5 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-//                     aria-label="Clear search"
-//                     title="Clear search"
-//                   >
-//                     <X size={13} />
-//                   </button>
-//                 )}
-//               </div>
+//                 {/* =================================================
+//           RECORD DATE SEARCH
+//       ================================================= */}
+//                 <div className="mt-3 border-t border-[#EDF3F0] pt-3">
+//                   <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+//                     {/* Date title */}
+//                     <div className="flex items-center gap-2.5">
+//                       <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#EEF8F3] text-[#087A57]">
+//                         <CalendarDays size={15} />
+//                       </div>
 
-//               {/* Care Center */}
-//               <select
-//                 value={careCenterFilter}
-//                 onChange={(e) => setCareCenterFilter(e.target.value)}
-//                 className={selectClass}
-//                 title="Filter by care center"
-//               >
-//                 <option value="All">Care Center · All</option>
-//                 {careCenters.map((center) => (
-//                   <option
-//                     key={center.carecenter_id}
-//                     value={String(center.carecenter_id)}
-//                   >
-//                     {center.carecenter_name}
-//                   </option>
-//                 ))}
-//               </select>
+//                       <div>
+//                         <p className="text-[10.5px] font-extrabold text-[#395448]">
+//                           Record Date Search
+//                         </p>
 
-//               {/* Deal Type */}
-//               <select
-//                 value={dealTypeFilter}
-//                 onChange={(e) => setDealTypeFilter(e.target.value)}
-//                 className={selectClass}
-//                 title="Filter by deal type"
-//               >
-//                 <option value="All">Deal · All</option>
-//                 {uniqueDealTypes.map((type) => (
-//                   <option key={type} value={type}>
-//                     {type}
-//                   </option>
-//                 ))}
-//                 {!uniqueDealTypes.includes("B2B") && <option value="B2B">B2B</option>}
-//                 {!uniqueDealTypes.includes("B2C") && <option value="B2C">B2C</option>}
-//               </select>
-
-//               {/* Unit */}
-//               <select
-//                 value={unitTypeFilter}
-//                 onChange={(e) => setUnitTypeFilter(e.target.value)}
-//                 className={selectClass}
-//                 title="Filter by unit"
-//               >
-//                 <option value="All">Unit · All</option>
-//                 {uniqueUnitTypes.map((type) => (
-//                   <option key={type} value={type}>
-//                     {type}
-//                   </option>
-//                 ))}
-//                 {!uniqueUnitTypes.includes("CWF") && <option value="CWF">BWF</option>}
-//                 {!uniqueUnitTypes.includes("ODCOM") && <option value="ODCOM">ODCOM</option>}
-//               </select>
-
-//               {/* Mode */}
-//               <select
-//                 value={modeTypeFilter}
-//                 onChange={(e) => setModeTypeFilter(e.target.value)}
-//                 className={selectClass}
-//                 title="Filter by payment mode"
-//               >
-//                 <option value="All">Mode · All</option>
-//                 {uniqueModeTypes.map((type) => (
-//                   <option key={type} value={type}>
-//                     {type}
-//                   </option>
-//                 ))}
-//                 {!uniqueModeTypes.includes("Prepaid") && <option value="Prepaid">Prepaid</option>}
-//                 {!uniqueModeTypes.includes("Postpaid") && <option value="Postpaid">Postpaid</option>}
-//               </select>
-
-//               {/* Status - client-side only */}
-//               <select
-//                 value={statusFilter}
-//                 onChange={(e) => setStatusFilter(e.target.value)}
-//                 className={selectClass}
-//                 title="Filter by rental status"
-//               >
-//                 <option value="All">Status · All</option>
-//                 <option value="ACTIVE">Active</option>
-//                 <option value="PENDING">Pending</option>
-//                 <option value="INACTIVE">Inactive</option>
-//                 <option value="CLOSED">Closed</option>
-//               </select>
-
-//               <button
-//                 type="button"
-//                 onClick={handleReset}
-//                 disabled={activeFilterCount === 0}
-//                 className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-[#DCE9E4] bg-white px-3 text-[10px] font-bold text-[#70867C] transition hover:bg-[#F7FAF8] hover:text-[#087A57] disabled:cursor-not-allowed disabled:opacity-40"
-//                 title="Reset filters"
-//               >
-//                 <RotateCcw size={13} />
-//                 Reset
-//               </button>
-//             </div>
-
-//             {/* Record Date Search */}
-//             <div className="mt-3 border-t border-[#EDF3F0] pt-3">
-//               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-//                 <div className="flex items-center gap-2.5">
-//                   <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#EEF8F3] text-[#087A57]">
-//                     <CalendarDays size={15} />
-//                   </div>
-//                   <div>
-//                     <p className="text-[10.5px] font-extrabold text-[#395448]">
-//                       Record Date Search
-//                     </p>
-//                     <p className="mt-0.5 text-[8.5px] font-medium text-slate-400">
-//                       Find rentals recorded on one date or between two dates.
-//                     </p>
-//                   </div>
-//                 </div>
-
-//                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-//                   <div className="inline-flex rounded-xl border border-[#DCE9E4] bg-[#F7FAF8] p-1">
-//                     <button
-//                       type="button"
-//                       onClick={() => {
-//                         setDateFilterMode("single");
-//                         setRecordDateFrom("");
-//                         setRecordDateTo("");
-//                       }}
-//                       className={`h-8 rounded-lg px-3 text-[9.5px] font-extrabold transition ${
-//                         dateFilterMode === "single"
-//                           ? "bg-white text-[#087A57] shadow-sm ring-1 ring-[#D7E8E0]"
-//                           : "text-[#7A8D84] hover:text-[#456057]"
-//                       }`}
-//                     >
-//                       Single Date
-//                     </button>
-//                     <button
-//                       type="button"
-//                       onClick={() => {
-//                         setDateFilterMode("range");
-//                         setRecordDateSingle("");
-//                       }}
-//                       className={`h-8 rounded-lg px-3 text-[9.5px] font-extrabold transition ${
-//                         dateFilterMode === "range"
-//                           ? "bg-white text-[#087A57] shadow-sm ring-1 ring-[#D7E8E0]"
-//                           : "text-[#7A8D84] hover:text-[#456057]"
-//                       }`}
-//                     >
-//                       Date Range
-//                     </button>
-//                   </div>
-
-//                   {dateFilterMode === "single" ? (
-//                     <div className="relative min-w-[190px]">
-//                       <CalendarDays
-//                         size={14}
-//                         className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8DA199]"
-//                       />
-//                       <input
-//                         type="date"
-//                         value={recordDateSingle}
-//                         onChange={(e) => setRecordDateSingle(e.target.value)}
-//                         className="h-10 w-full rounded-xl border border-[#DCE9E4] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#496158] outline-none transition focus:border-[#0A8B61] focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
-//                         title="Search by exact record date"
-//                       />
+//                         <p className="mt-0.5 text-[8.5px] font-medium text-slate-400">
+//                           Find rentals recorded on one date or between two
+//                           dates.
+//                         </p>
+//                       </div>
 //                     </div>
-//                   ) : (
+
+//                     {/* Date controls */}
 //                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-//                       <div className="relative min-w-[175px]">
-//                         <CalendarDays
-//                           size={14}
-//                           className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8DA199]"
-//                         />
-//                         <input
-//                           type="date"
-//                           value={recordDateFrom}
-//                           max={recordDateTo || undefined}
-//                           onChange={(e) => setRecordDateFrom(e.target.value)}
-//                           className="h-10 w-full rounded-xl border border-[#DCE9E4] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#496158] outline-none transition focus:border-[#0A8B61] focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
-//                           title="Record date from"
-//                         />
+//                       {/* Single / Range */}
+//                       <div className="inline-flex rounded-xl border border-[#DCE9E4] bg-[#F7FAF8] p-1">
+//                         <button
+//                           type="button"
+//                           onClick={() => {
+//                             setDateFilterMode("single");
+//                             setRecordDateFrom("");
+//                             setRecordDateTo("");
+//                           }}
+//                           className={`h-8 rounded-lg px-3 text-[9.5px] font-extrabold transition ${
+//                             dateFilterMode === "single"
+//                               ? "bg-white text-[#087A57] shadow-sm ring-1 ring-[#D7E8E0]"
+//                               : "text-[#7A8D84] hover:text-[#456057]"
+//                           }`}
+//                         >
+//                           Single Date
+//                         </button>
+
+//                         <button
+//                           type="button"
+//                           onClick={() => {
+//                             setDateFilterMode("range");
+//                             setRecordDateSingle("");
+//                           }}
+//                           className={`h-8 rounded-lg px-3 text-[9.5px] font-extrabold transition ${
+//                             dateFilterMode === "range"
+//                               ? "bg-white text-[#087A57] shadow-sm ring-1 ring-[#D7E8E0]"
+//                               : "text-[#7A8D84] hover:text-[#456057]"
+//                           }`}
+//                         >
+//                           Date Range
+//                         </button>
 //                       </div>
 
-//                       <span className="hidden text-[9px] font-bold text-[#9AABA3] sm:inline">
-//                         to
-//                       </span>
+//                       {/* Single date */}
+//                       {dateFilterMode === "single" ? (
+//                         <div className="relative min-w-[190px]">
+//                           <CalendarDays
+//                             size={14}
+//                             className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8DA199]"
+//                           />
 
-//                       <div className="relative min-w-[175px]">
-//                         <CalendarDays
-//                           size={14}
-//                           className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8DA199]"
-//                         />
-//                         <input
-//                           type="date"
-//                           value={recordDateTo}
-//                           min={recordDateFrom || undefined}
-//                           onChange={(e) => setRecordDateTo(e.target.value)}
-//                           className="h-10 w-full rounded-xl border border-[#DCE9E4] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#496158] outline-none transition focus:border-[#0A8B61] focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
-//                           title="Record date to"
-//                         />
-//                       </div>
+//                           <input
+//                             type="date"
+//                             value={recordDateSingle}
+//                             onChange={(e) =>
+//                               setRecordDateSingle(e.target.value)
+//                             }
+//                             className="h-10 w-full rounded-xl border border-[#DCE9E4] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#496158] outline-none transition focus:border-[#0A8B61] focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
+//                             title="Search by exact record date"
+//                           />
+//                         </div>
+//                       ) : (
+//                         /* Date range */
+//                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+//                           <div className="relative min-w-[175px]">
+//                             <CalendarDays
+//                               size={14}
+//                               className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8DA199]"
+//                             />
+
+//                             <input
+//                               type="date"
+//                               value={recordDateFrom}
+//                               max={recordDateTo || undefined}
+//                               onChange={(e) =>
+//                                 setRecordDateFrom(e.target.value)
+//                               }
+//                               className="h-10 w-full rounded-xl border border-[#DCE9E4] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#496158] outline-none transition focus:border-[#0A8B61] focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
+//                               title="Record date from"
+//                             />
+//                           </div>
+
+//                           <span className="hidden text-[9px] font-bold text-[#9AABA3] sm:inline">
+//                             to
+//                           </span>
+
+//                           <div className="relative min-w-[175px]">
+//                             <CalendarDays
+//                               size={14}
+//                               className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8DA199]"
+//                             />
+
+//                             <input
+//                               type="date"
+//                               value={recordDateTo}
+//                               min={recordDateFrom || undefined}
+//                               onChange={(e) => setRecordDateTo(e.target.value)}
+//                               className="h-10 w-full rounded-xl border border-[#DCE9E4] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#496158] outline-none transition focus:border-[#0A8B61] focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
+//                               title="Record date to"
+//                             />
+//                           </div>
+//                         </div>
+//                       )}
+
+//                       {/* Clear Date */}
+//                       {hasRecordDateFilter && (
+//                         <button
+//                           type="button"
+//                           onClick={() => {
+//                             setRecordDateSingle("");
+//                             setRecordDateFrom("");
+//                             setRecordDateTo("");
+//                           }}
+//                           className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-[#DCE9E4] bg-white px-3 text-[9.5px] font-bold text-[#73877E] transition hover:bg-[#F6FAF8] hover:text-[#087A57]"
+//                           title="Clear record date filter"
+//                         >
+//                           <X size={12} />
+//                           Clear Date
+//                         </button>
+//                       )}
 //                     </div>
-//                   )}
-
-//                   {hasRecordDateFilter && (
-//                     <button
-//                       type="button"
-//                       onClick={() => {
-//                         setRecordDateSingle("");
-//                         setRecordDateFrom("");
-//                         setRecordDateTo("");
-//                       }}
-//                       className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-[#DCE9E4] bg-white px-3 text-[9.5px] font-bold text-[#73877E] transition hover:bg-[#F6FAF8] hover:text-[#087A57]"
-//                       title="Clear record date filter"
-//                     >
-//                       <X size={12} />
-//                       Clear Date
-//                     </button>
-//                   )}
+//                   </div>
 //                 </div>
 //               </div>
 //             </div>
@@ -934,7 +996,9 @@
 //                   Rental register
 //                 </p>
 //                 <p className="mt-0.5 text-[9px] font-medium text-slate-400">
-//                   {filteredRentals.length} {filteredRentals.length === 1 ? "record" : "records"} currently shown
+//                   {filteredRentals.length}{" "}
+//                   {filteredRentals.length === 1 ? "record" : "records"}{" "}
+//                   currently shown
 //                 </p>
 //               </div>
 
@@ -947,19 +1011,29 @@
 //             {loading ? (
 //               <div className="flex flex-col items-center justify-center py-24">
 //                 <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF8F3]">
-//                   <RefreshCw size={20} className="animate-spin text-[#087A57]" />
+//                   <RefreshCw
+//                     size={20}
+//                     className="animate-spin text-[#087A57]"
+//                   />
 //                 </div>
-//                 <p className="mt-4 text-[12px] font-bold text-[#60766D]">Loading rental records</p>
-//                 <p className="mt-1 text-[10px] font-medium text-slate-400">Syncing current equipment operations…</p>
+//                 <p className="mt-4 text-[12px] font-bold text-[#60766D]">
+//                   Loading rental records
+//                 </p>
+//                 <p className="mt-1 text-[10px] font-medium text-slate-400">
+//                   Syncing current equipment operations…
+//                 </p>
 //               </div>
 //             ) : filteredRentals.length === 0 ? (
 //               <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
 //                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#E0EDE7] bg-[#F5FAF7] text-[#7A9489]">
 //                   <Package size={24} />
 //                 </div>
-//                 <h3 className="mt-4 text-[14px] font-extrabold text-[#314D42]">No rental records found</h3>
+//                 <h3 className="mt-4 text-[14px] font-extrabold text-[#314D42]">
+//                   No rental records found
+//                 </h3>
 //                 <p className="mt-1 max-w-[380px] text-[10px] font-medium leading-5 text-slate-400">
-//                   Try changing the filters or create a new equipment rental requisition.
+//                   Try changing the filters or create a new equipment rental
+//                   requisition.
 //                 </p>
 //                 <div className="mt-4 flex items-center gap-2">
 //                   {activeFilterCount > 0 && (
@@ -985,10 +1059,11 @@
 //             ) : (
 //               <>
 //                 <div className="overflow-x-auto">
-//                   <table className="w-full min-w-[1080px] border-collapse text-left">
+//                   <table className="w-full min-w-[1180px] border-collapse text-left">
 //                     <thead>
 //                       <tr className="border-b border-[#E8F0EC] bg-[#F8FBF9] text-[9px] font-extrabold uppercase tracking-[0.12em] text-[#82968D]">
 //                         <th className="px-5 py-3.5">Equipment</th>
+//                         <th className="px-5 py-3.5">Bed Number</th>
 //                         <th className="px-5 py-3.5">Patient / Client</th>
 //                         <th className="px-5 py-3.5">Login Date</th>
 //                         <th className="px-5 py-3.5">Logout Date</th>
@@ -1009,9 +1084,12 @@
 //                         const upperStatus = (rental.status || "").toUpperCase();
 //                         const isDue =
 //                           !rental.login_out_date &&
-//                           ["ACTIVE", "RUNNING", "DELIVERED", "PENDING"].includes(
-//                             upperStatus,
-//                           ) &&
+//                           [
+//                             "ACTIVE",
+//                             "RUNNING",
+//                             "DELIVERED",
+//                             "PENDING",
+//                           ].includes(upperStatus) &&
 //                           days >= 30;
 
 //                         return (
@@ -1053,6 +1131,16 @@
 //                               </div>
 //                             </td>
 
+//                             {/* Bed Number */}
+//                             <td className="px-5 py-4 align-middle">
+//                               <span className="inline-flex min-w-[72px] items-center justify-center rounded-[8px] border border-[#DCE9E4] bg-[#F7FAF8] px-2.5 py-1 text-[10.5px] font-bold text-[#4F695E]">
+//                                 {rental.care_bed_no ||
+//                                   rental.care_bed_no ||
+//                                   rental.care_bed_no ||
+//                                   "—"}
+//                               </span>
+//                             </td>
+
 //                             {/* Patient */}
 //                             <td className="px-5 py-4 align-middle">
 //                               <div className="flex items-center gap-2.5">
@@ -1078,7 +1166,10 @@
 //                             {/* Login */}
 //                             <td className="px-5 py-4 align-middle">
 //                               <div className="inline-flex items-center gap-2 text-[10.5px] font-semibold text-[#5D7369]">
-//                                 <CalendarDays size={13} className="text-[#91A59C]" />
+//                                 <CalendarDays
+//                                   size={13}
+//                                   className="text-[#91A59C]"
+//                                 />
 //                                 {formatDisplayDate(rental.login_date)}
 //                               </div>
 //                             </td>
@@ -1086,7 +1177,10 @@
 //                             {/* Logout */}
 //                             <td className="px-5 py-4 align-middle">
 //                               <div className="inline-flex items-center gap-2 text-[10.5px] font-semibold text-[#5D7369]">
-//                                 <CalendarDays size={13} className="text-[#91A59C]" />
+//                                 <CalendarDays
+//                                   size={13}
+//                                   className="text-[#91A59C]"
+//                                 />
 //                                 {formatDisplayDate(rental.login_out_date)}
 //                               </div>
 //                             </td>
@@ -1108,7 +1202,6 @@
 //                             {/* Actions */}
 //                             <td className="px-5 py-4 align-middle">
 //                               <div className="flex items-center justify-center gap-1.5">
-
 //                                 <Link
 //                                   to={`/rental-view/${rental.rental_id}`}
 //                                   className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-slate-200 bg-white text-slate-600 transition hover:-translate-y-[1px] hover:border-[#CBDAD3] hover:bg-[#F7FAF8] hover:text-[#087A57] hover:shadow-sm"
@@ -1129,7 +1222,9 @@
 
 //                                 <button
 //                                   type="button"
-//                                   onClick={() => handleDeleteClick(rental.rental_id)}
+//                                   onClick={() =>
+//                                     handleDeleteClick(rental.rental_id)
+//                                   }
 //                                   className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-rose-200 bg-rose-50 text-rose-600 transition hover:-translate-y-[1px] hover:bg-rose-100 hover:text-rose-700 hover:shadow-sm"
 //                                   title="Delete rental"
 //                                   aria-label={`Delete rental ${rental.rental_id}`}
@@ -1148,17 +1243,27 @@
 //                 {/* Pagination */}
 //                 <div className="flex flex-col items-center justify-between gap-3 border-t border-[#EAF1ED] bg-[#FBFDFC] px-5 py-3.5 sm:flex-row">
 //                   <p className="text-[10px] font-medium text-[#7D9188]">
-//                     Showing <span className="font-bold text-[#4F695E]">{indexOfFirstRecord + 1}</span>–
+//                     Showing{" "}
+//                     <span className="font-bold text-[#4F695E]">
+//                       {indexOfFirstRecord + 1}
+//                     </span>
+//                     –
 //                     <span className="font-bold text-[#4F695E]">
 //                       {Math.min(indexOfLastRecord, filteredRentals.length)}
 //                     </span>{" "}
-//                     of <span className="font-bold text-[#4F695E]">{filteredRentals.length}</span> records
+//                     of{" "}
+//                     <span className="font-bold text-[#4F695E]">
+//                       {filteredRentals.length}
+//                     </span>{" "}
+//                     records
 //                   </p>
 
 //                   <div className="flex items-center gap-1.5">
 //                     <button
 //                       type="button"
-//                       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+//                       onClick={() =>
+//                         setCurrentPage((prev) => Math.max(prev - 1, 1))
+//                       }
 //                       disabled={currentPage === 1}
 //                       className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#DCE8E3] bg-white text-[#60786E] transition hover:border-[#C6DBD1] hover:bg-[#F6FAF8] disabled:cursor-not-allowed disabled:opacity-35"
 //                       title="Previous page"
@@ -1181,7 +1286,9 @@
 //                         return (
 //                           <React.Fragment key={page}>
 //                             {showEllipsis && (
-//                               <span className="px-1 text-[10px] text-slate-400">…</span>
+//                               <span className="px-1 text-[10px] text-slate-400">
+//                                 …
+//                               </span>
 //                             )}
 //                             <button
 //                               type="button"
@@ -1247,7 +1354,8 @@
 //                       Calculate Total Days
 //                     </h3>
 //                     <p className="mt-1 max-w-[310px] text-[10px] font-medium text-emerald-50/65">
-//                       Calculation purpose only · does not change any rental record
+//                       Calculation purpose only · temporary calculation · does
+//                       not change any rental record
 //                     </p>
 //                   </div>
 //                 </div>
@@ -1308,11 +1416,13 @@
 //               </p>
 
 //               {/* Result */}
-//               <div className={`mt-5 rounded-[18px] border p-5 text-center ${
-//                 !editLogoutDate && modalDays >= 30
-//                   ? "border-amber-200 bg-amber-50"
-//                   : "border-[#DCECE5] bg-[#F4FAF7]"
-//               }`}>
+//               <div
+//                 className={`mt-5 rounded-[18px] border p-5 text-center ${
+//                   !editLogoutDate && modalDays >= 30
+//                     ? "border-amber-200 bg-amber-50"
+//                     : "border-[#DCECE5] bg-[#F4FAF7]"
+//                 }`}
+//               >
 //                 <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#087A57] shadow-sm ring-1 ring-black/[0.03]">
 //                   <Clock3 size={16} />
 //                 </div>
@@ -1323,7 +1433,9 @@
 //                   <span className="text-[30px] font-black tracking-[-0.04em] text-[#087A57]">
 //                     {modalDays}
 //                   </span>
-//                   <span className="text-[15px] font-bold text-[#82958D]">/ {modalSecond}</span>
+//                   <span className="text-[15px] font-bold text-[#82958D]">
+//                     / {modalSecond}
+//                   </span>
 //                 </div>
 //                 {!editLogoutDate && modalDays >= 30 && (
 //                   <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-white/70 px-2.5 py-1 text-[9px] font-extrabold text-amber-700">
@@ -1365,6 +1477,10 @@
 //     </DashboardLayout>
 //   );
 // }
+
+
+
+
 
 import React, {
   useState,
@@ -1465,7 +1581,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
   const recordsPerPage = 10;
   const hasInitializedFilters = useRef(false);
 
-  // Standalone rental-days calculator (not tied to a table row).
+  // Standalone rental-days calculator
   const [calcModalOpen, setCalcModalOpen] = useState(false);
   const [editLoginDate, setEditLoginDate] = useState("");
   const [editLogoutDate, setEditLogoutDate] = useState("");
@@ -1476,7 +1592,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
     return () => clearTimeout(t);
   }, [searchTerm]);
 
-  // Preserve filters/page while navigating to View/Edit/Create and back.
+  // Preserve filters/page
   useEffect(() => {
     sessionStorage.setItem(
       RENTAL_FILTER_STORAGE_KEY,
@@ -1624,27 +1740,12 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
     sessionStorage.removeItem(RENTAL_FILTER_STORAGE_KEY);
   };
 
-  // ====================== TOTAL DAYS LOGIC ======================
-  // Same month examples:
-  // 05.08.2026 → 20.08.2026 = 15/15
-  // 11.08.2026 → 21.08.2026 = 10/10
-  // 10.08.2026 → 20.08.2026 = 10/10
-  //
-  // Cross month example:
-  // 20.08.2026 → 06.09.2026 = 17/6   (standard day difference)
-  // 10.08.2026 → 06.09.2026 = 27/6
-  //
-  // Rule:
-  // - totalDays = exact calendar day difference
-  // - Same month  → show totalDays / totalDays   (X/X)
-  // - Different month → show totalDays / logout day
   const calculateTotalDays = (loginDate, logoutDate, status) => {
     if (!loginDate) return "0";
 
     const start = new Date(loginDate);
     const end = logoutDate ? new Date(logoutDate) : new Date();
 
-    // Normalize to midnight to avoid time-of-day issues
     start.setHours(0, 0, 0, 0);
     end.setHours(0, 0, 0, 0);
 
@@ -1655,8 +1756,6 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
       start.getFullYear() === end.getFullYear() &&
       start.getMonth() === end.getMonth();
 
-    // Same month → second number = days themselves (X/X)
-    // Cross month → second number = day of logout/today
     const secondNumber = isSameMonth ? diffDays : end.getDate();
 
     if (!logoutDate) {
@@ -1678,7 +1777,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
     }
 
     return (
-      <span className="inline-flex rounded-lg bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-600 ring-1 ring-slate-100">
+      <span className="inline-flex rounded-lg border border-[#E3D9FF] bg-[#FAF8FF] px-2.5 py-1 text-[11px] font-bold text-[#553E82]">
         {diffDays}/{secondNumber}
       </span>
     );
@@ -1745,7 +1844,6 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
     setEditLogoutDate("");
   };
 
-  // Unique filter options from current result set
   const uniqueDealTypes = [
     ...new Set(rentals.map((r) => r.deal_type).filter(Boolean)),
   ];
@@ -1772,7 +1870,6 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
     return `${year}-${month}-${day}`;
   };
 
-  // Status + Record Date filters stay client-side so the existing API contract is unchanged.
   const filteredRentals = useMemo(() => {
     return rentals.filter((rental) => {
       const status = (rental.status || "").toUpperCase();
@@ -1815,30 +1912,6 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
     recordDateTo,
   ]);
 
-  // Operational summary values
-  const summary = useMemo(() => {
-    let active = 0;
-    let pending = 0;
-    let due = 0;
-
-    rentals.forEach((rental) => {
-      const status = (rental.status || "").toUpperCase();
-      if (["ACTIVE", "RUNNING", "DELIVERED"].includes(status)) active += 1;
-      if (status === "PENDING") pending += 1;
-
-      if (
-        !rental.login_out_date &&
-        ["ACTIVE", "RUNNING", "DELIVERED", "PENDING"].includes(status) &&
-        getDaysNumber(rental.login_date, rental.login_out_date) >= 30
-      ) {
-        due += 1;
-      }
-    });
-
-    return { total: rentals.length, active, pending, due };
-  }, [rentals]);
-
-  // Pagination
   const totalPages = Math.ceil(filteredRentals.length / recordsPerPage) || 1;
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
@@ -1878,8 +1951,11 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
 
     if (upper === "ACTIVE" || upper === "RUNNING" || upper === "DELIVERED") {
       return (
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.08em] text-emerald-700">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#E3D9FF] bg-[#F3EFFF] px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.08em] text-[#5d2ed7]">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#D3C4FC] opacity-75" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#5d2ed7]" />
+          </span>
           Active
         </span>
       );
@@ -1939,47 +2015,43 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
     (hasRecordDateFilter ? 1 : 0);
 
   const selectClass =
-    "h-11 w-full appearance-none rounded-xl border border-[#DCEAE4] bg-white px-3 text-[11px] font-bold text-[#496158] outline-none transition hover:border-[#BBD5CA] focus:border-[#0A8B61] focus:ring-4 focus:ring-[#0A8B61]/[0.07] cursor-pointer";
+    "h-11 w-full appearance-none rounded-xl border border-[#E3D9FF] bg-white px-3 text-[11px] font-bold text-[#553E82] outline-none transition hover:border-[#D3C4FC] focus:border-[#5d2ed7] focus:ring-4 focus:ring-[#5d2ed7]/[0.08] cursor-pointer";
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-[#F5F8F6] px-4 py-5 sm:px-6 lg:px-7">
+      <div className="min-h-screen bg-[#FAF8FF] px-4 py-5 sm:px-6 lg:px-7">
         <div className="mx-auto w-full max-w-[1540px] space-y-5">
           {/* =====================================================
-    RENTAL MASTER - COMBINED CONTROL CARD
-====================================================== */}
-          <section className="relative overflow-hidden rounded-[24px] border border-[#DDEBE5] bg-white shadow-[0_10px_35px_rgba(29,91,68,0.06)]">
-            {/* Background decoration */}
+              RENTAL MASTER - COMBINED CONTROL CARD
+          ====================================================== */}
+          <section className="relative overflow-hidden rounded-[24px] border border-[#E3D9FF] bg-white shadow-[0_12px_35px_rgba(93,46,215,0.06)]">
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              <div className="absolute -right-24 -top-28 h-72 w-72 rounded-full bg-[#0A9668]/[0.055] blur-3xl" />
-              <div className="absolute -bottom-24 left-[32%] h-56 w-56 rounded-full bg-[#087A57]/[0.035] blur-3xl" />
+              <div className="absolute -right-24 -top-28 h-72 w-72 rounded-full bg-[#5d2ed7]/[0.055] blur-3xl" />
+              <div className="absolute -bottom-24 left-[32%] h-56 w-56 rounded-full bg-[#421E9F]/[0.035] blur-3xl" />
             </div>
 
             <div className="relative z-10">
-              {/* =================================================
-        HEADER
-    ================================================= */}
+              {/* HEADER */}
               <div className="flex flex-col gap-6 px-5 py-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
-                {/* Left */}
                 <div className="flex min-w-0 items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] bg-gradient-to-br from-[#087A57] to-[#0A9668] text-white shadow-[0_10px_24px_rgba(8,122,87,0.22)]">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] bg-gradient-to-br from-[#421E9F] to-[#5d2ed7] text-white shadow-[0_10px_24px_rgba(93,46,215,0.22)]">
                     <Package size={23} strokeWidth={2.1} />
                   </div>
 
                   <div className="min-w-0">
                     <div className="mb-1 flex flex-wrap items-center gap-2">
-                      <span className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-[#0A8B61]">
+                      <span className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-[#5d2ed7]">
                         Equipment Operations
                       </span>
 
-                      <span className="h-1 w-1 rounded-full bg-[#B5C8C0]" />
+                      <span className="h-1 w-1 rounded-full bg-[#D3C4FC]" />
 
-                      <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-slate-400">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#8B7BB5]">
                         Rental Control
                       </span>
                     </div>
 
-                    <h1 className="text-[23px] font-extrabold tracking-[-0.035em] text-[#183A2F] sm:text-[26px]">
+                    <h1 className="text-[23px] font-extrabold tracking-[-0.035em] text-[#22124D] sm:text-[26px]">
                       Rental Master
                     </h1>
                   </div>
@@ -1987,23 +2059,21 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
 
                 {/* Right actions */}
                 <div className="flex flex-wrap items-center gap-2.5">
-                  {/* Calculator */}
                   <button
                     type="button"
                     onClick={openCalcModal}
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#D7E9E0] bg-[#F1F9F5] text-[#087A57] shadow-sm transition hover:-translate-y-[1px] hover:border-[#B8D9CA] hover:bg-[#EAF7F0] hover:shadow-md"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#E3D9FF] bg-[#F3EFFF] text-[#5d2ed7] shadow-sm transition hover:-translate-y-[1px] hover:border-[#D3C4FC] hover:bg-[#EAE2FF] hover:shadow-md"
                     title="Temporary rental days calculator"
                     aria-label="Open temporary rental days calculator"
                   >
                     <Calculator size={17} strokeWidth={2.2} />
                   </button>
 
-                  {/* Refresh */}
                   <button
                     type="button"
                     onClick={fetchRentals}
                     disabled={loading}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-[#DCE9E4] bg-white px-4 text-[11px] font-bold text-[#61776E] shadow-sm transition hover:border-[#C3DAD0] hover:bg-[#F8FBF9] hover:text-[#087A57] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-[#E3D9FF] bg-white px-4 text-[11px] font-bold text-[#553E82] shadow-sm transition hover:border-[#D3C4FC] hover:bg-[#FAF8FF] hover:text-[#5d2ed7] disabled:cursor-not-allowed disabled:opacity-50"
                     title="Refresh rental records"
                   >
                     <RefreshCw
@@ -2013,11 +2083,10 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                     Refresh
                   </button>
 
-                  {/* New requisition */}
                   <button
                     type="button"
                     onClick={() => navigate("/rental-requisition")}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#087A57] to-[#0A9668] px-5 text-[11px] font-extrabold text-white shadow-[0_9px_22px_rgba(8,122,87,0.22)] transition hover:-translate-y-[1px] hover:shadow-[0_12px_28px_rgba(8,122,87,0.28)] active:translate-y-0"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#421E9F] to-[#5d2ed7] px-5 text-[11px] font-extrabold text-white shadow-[0_9px_22px_rgba(93,46,215,0.22)] transition hover:-translate-y-[1px] hover:shadow-[0_12px_28px_rgba(93,46,215,0.28)] active:translate-y-0"
                   >
                     <Plus size={16} strokeWidth={2.5} />
                     Log New Requisition
@@ -2025,20 +2094,15 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                 </div>
               </div>
 
-              {/* =================================================
-        DIVIDER
-    ================================================= */}
-              <div className="mx-5 border-t border-[#EDF3F0] lg:mx-6" />
+              {/* DIVIDER */}
+              <div className="mx-5 border-t border-[#F3EFFF] lg:mx-6" />
 
-              {/* =================================================
-        FILTER HEADER
-    ================================================= */}
+              {/* FILTER HEADER */}
               <div className="px-5 pt-4 lg:px-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  {/* Active filters */}
                   {activeFilterCount > 0 && (
                     <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D8EEE4] bg-[#EDF8F3] px-2.5 py-1 text-[9px] font-extrabold text-[#087A57]">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-[#E3D9FF] bg-[#F3EFFF] px-2.5 py-1 text-[9px] font-extrabold text-[#5d2ed7]">
                         <Filter size={11} />
                         {activeFilterCount} active{" "}
                         {activeFilterCount === 1 ? "filter" : "filters"}
@@ -2047,7 +2111,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                       <button
                         type="button"
                         onClick={handleReset}
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-[9px] font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-[9px] font-bold text-[#7F6EA6] transition hover:bg-[#F3EFFF] hover:text-[#5d2ed7]"
                       >
                         <RotateCcw size={12} />
                         Clear all
@@ -2057,16 +2121,14 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                 </div>
               </div>
 
-              {/* =================================================
-        MAIN FILTERS
-    ================================================= */}
+              {/* MAIN FILTERS */}
               <div className="px-5 pb-4 pt-3 lg:px-6">
                 <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-[minmax(300px,1.8fr)_repeat(5,minmax(130px,1fr))_auto]">
                   {/* Search */}
                   <div className="relative">
                     <Search
                       size={16}
-                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8EA49B]"
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                     />
 
                     <input
@@ -2074,14 +2136,14 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                       placeholder="Find rental records"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="h-11 w-full rounded-xl border border-[#DCEAE4] bg-[#FBFDFC] pl-10 pr-10 text-[11px] font-semibold text-[#415B50] outline-none transition placeholder:font-medium placeholder:text-[#A4B5AE] hover:border-[#C7DBD2] focus:border-[#0A8B61] focus:bg-white focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
+                      className="h-11 w-full rounded-xl border border-[#E3D9FF] bg-[#FAF8FF] pl-10 pr-10 text-[11px] font-semibold text-[#22124D] outline-none transition placeholder:font-medium placeholder:text-[#A697C7] hover:border-[#D3C4FC] focus:border-[#5d2ed7] focus:bg-white focus:ring-4 focus:ring-[#5d2ed7]/[0.08]"
                     />
 
                     {searchTerm && (
                       <button
                         type="button"
                         onClick={() => setSearchTerm("")}
-                        className="absolute right-2.5 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                        className="absolute right-2.5 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md text-[#7F6EA6] transition hover:bg-[#F3EFFF] hover:text-[#5d2ed7]"
                         aria-label="Clear search"
                         title="Clear search"
                       >
@@ -2098,7 +2160,6 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                     title="Filter by care center"
                   >
                     <option value="All">Care Center · All</option>
-
                     {careCenters.map((center) => (
                       <option
                         key={center.carecenter_id}
@@ -2117,17 +2178,14 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                     title="Filter by deal type"
                   >
                     <option value="All">Deal · All</option>
-
                     {uniqueDealTypes.map((type) => (
                       <option key={type} value={type}>
                         {type}
                       </option>
                     ))}
-
                     {!uniqueDealTypes.includes("B2B") && (
                       <option value="B2B">B2B</option>
                     )}
-
                     {!uniqueDealTypes.includes("B2C") && (
                       <option value="B2C">B2C</option>
                     )}
@@ -2141,17 +2199,14 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                     title="Filter by unit"
                   >
                     <option value="All">Unit · All</option>
-
                     {uniqueUnitTypes.map((type) => (
                       <option key={type} value={type}>
                         {type}
                       </option>
                     ))}
-
                     {!uniqueUnitTypes.includes("BWF") && (
                       <option value="BWF">BWF</option>
                     )}
-
                     {!uniqueUnitTypes.includes("ODCOM") && (
                       <option value="ODCOM">ODCOM</option>
                     )}
@@ -2165,17 +2220,14 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                     title="Filter by payment mode"
                   >
                     <option value="All">Mode · All</option>
-
                     {uniqueModeTypes.map((type) => (
                       <option key={type} value={type}>
                         {type}
                       </option>
                     ))}
-
                     {!uniqueModeTypes.includes("Prepaid") && (
                       <option value="Prepaid">Prepaid</option>
                     )}
-
                     {!uniqueModeTypes.includes("Postpaid") && (
                       <option value="Postpaid">Postpaid</option>
                     )}
@@ -2190,9 +2242,8 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                   >
                     <option value="All">Status · All</option>
                     <option value="ACTIVE">Active</option>
-
                     <option value="INACTIVE">Inactive</option>
-                    <option value="PENDING">Active/Inactive</option>
+                    <option value="PENDING">Pending</option>
                     <option value="CLOSED">Closed</option>
                   </select>
 
@@ -2201,7 +2252,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                     type="button"
                     onClick={handleReset}
                     disabled={activeFilterCount === 0}
-                    className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-[#DCE9E4] bg-white px-3 text-[10px] font-bold text-[#70867C] transition hover:bg-[#F7FAF8] hover:text-[#087A57] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-[#E3D9FF] bg-white px-3 text-[10px] font-bold text-[#7F6EA6] transition hover:bg-[#FAF8FF] hover:text-[#5d2ed7] disabled:cursor-not-allowed disabled:opacity-40"
                     title="Reset filters"
                   >
                     <RotateCcw size={13} />
@@ -2209,33 +2260,26 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                   </button>
                 </div>
 
-                {/* =================================================
-          RECORD DATE SEARCH
-      ================================================= */}
-                <div className="mt-3 border-t border-[#EDF3F0] pt-3">
+                {/* RECORD DATE SEARCH */}
+                <div className="mt-3 border-t border-[#F3EFFF] pt-3">
                   <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                    {/* Date title */}
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#EEF8F3] text-[#087A57]">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#F3EFFF] text-[#5d2ed7]">
                         <CalendarDays size={15} />
                       </div>
 
                       <div>
-                        <p className="text-[10.5px] font-extrabold text-[#395448]">
+                        <p className="text-[10.5px] font-extrabold text-[#22124D]">
                           Record Date Search
                         </p>
-
-                        <p className="mt-0.5 text-[8.5px] font-medium text-slate-400">
-                          Find rentals recorded on one date or between two
-                          dates.
+                        <p className="mt-0.5 text-[8.5px] font-medium text-[#7F6EA6]">
+                          Find rentals recorded on one date or between two dates.
                         </p>
                       </div>
                     </div>
 
-                    {/* Date controls */}
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                      {/* Single / Range */}
-                      <div className="inline-flex rounded-xl border border-[#DCE9E4] bg-[#F7FAF8] p-1">
+                      <div className="inline-flex rounded-xl border border-[#E3D9FF] bg-[#FAF8FF] p-1">
                         <button
                           type="button"
                           onClick={() => {
@@ -2245,8 +2289,8 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                           }}
                           className={`h-8 rounded-lg px-3 text-[9.5px] font-extrabold transition ${
                             dateFilterMode === "single"
-                              ? "bg-white text-[#087A57] shadow-sm ring-1 ring-[#D7E8E0]"
-                              : "text-[#7A8D84] hover:text-[#456057]"
+                              ? "bg-white text-[#5d2ed7] shadow-sm ring-1 ring-[#E3D9FF]"
+                              : "text-[#7F6EA6] hover:text-[#553E82]"
                           }`}
                         >
                           Single Date
@@ -2260,41 +2304,37 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                           }}
                           className={`h-8 rounded-lg px-3 text-[9.5px] font-extrabold transition ${
                             dateFilterMode === "range"
-                              ? "bg-white text-[#087A57] shadow-sm ring-1 ring-[#D7E8E0]"
-                              : "text-[#7A8D84] hover:text-[#456057]"
+                              ? "bg-white text-[#5d2ed7] shadow-sm ring-1 ring-[#E3D9FF]"
+                              : "text-[#7F6EA6] hover:text-[#553E82]"
                           }`}
                         >
                           Date Range
                         </button>
                       </div>
 
-                      {/* Single date */}
                       {dateFilterMode === "single" ? (
                         <div className="relative min-w-[190px]">
                           <CalendarDays
                             size={14}
-                            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8DA199]"
+                            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                           />
-
                           <input
                             type="date"
                             value={recordDateSingle}
                             onChange={(e) =>
                               setRecordDateSingle(e.target.value)
                             }
-                            className="h-10 w-full rounded-xl border border-[#DCE9E4] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#496158] outline-none transition focus:border-[#0A8B61] focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
+                            className="h-10 w-full rounded-xl border border-[#E3D9FF] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#553E82] outline-none transition focus:border-[#5d2ed7] focus:ring-4 focus:ring-[#5d2ed7]/[0.08]"
                             title="Search by exact record date"
                           />
                         </div>
                       ) : (
-                        /* Date range */
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                           <div className="relative min-w-[175px]">
                             <CalendarDays
                               size={14}
-                              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8DA199]"
+                              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                             />
-
                             <input
                               type="date"
                               value={recordDateFrom}
@@ -2302,34 +2342,32 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                               onChange={(e) =>
                                 setRecordDateFrom(e.target.value)
                               }
-                              className="h-10 w-full rounded-xl border border-[#DCE9E4] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#496158] outline-none transition focus:border-[#0A8B61] focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
+                              className="h-10 w-full rounded-xl border border-[#E3D9FF] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#553E82] outline-none transition focus:border-[#5d2ed7] focus:ring-4 focus:ring-[#5d2ed7]/[0.08]"
                               title="Record date from"
                             />
                           </div>
 
-                          <span className="hidden text-[9px] font-bold text-[#9AABA3] sm:inline">
+                          <span className="hidden text-[9px] font-bold text-[#7F6EA6] sm:inline">
                             to
                           </span>
 
                           <div className="relative min-w-[175px]">
                             <CalendarDays
                               size={14}
-                              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8DA199]"
+                              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                             />
-
                             <input
                               type="date"
                               value={recordDateTo}
                               min={recordDateFrom || undefined}
                               onChange={(e) => setRecordDateTo(e.target.value)}
-                              className="h-10 w-full rounded-xl border border-[#DCE9E4] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#496158] outline-none transition focus:border-[#0A8B61] focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
+                              className="h-10 w-full rounded-xl border border-[#E3D9FF] bg-white pl-9 pr-3 text-[10.5px] font-bold text-[#553E82] outline-none transition focus:border-[#5d2ed7] focus:ring-4 focus:ring-[#5d2ed7]/[0.08]"
                               title="Record date to"
                             />
                           </div>
                         </div>
                       )}
 
-                      {/* Clear Date */}
                       {hasRecordDateFilter && (
                         <button
                           type="button"
@@ -2338,7 +2376,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                             setRecordDateFrom("");
                             setRecordDateTo("");
                           }}
-                          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-[#DCE9E4] bg-white px-3 text-[9.5px] font-bold text-[#73877E] transition hover:bg-[#F6FAF8] hover:text-[#087A57]"
+                          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-[#E3D9FF] bg-white px-3 text-[9.5px] font-bold text-[#7F6EA6] transition hover:bg-[#FAF8FF] hover:text-[#5d2ed7]"
                           title="Clear record date filter"
                         >
                           <X size={12} />
@@ -2355,58 +2393,57 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
           {/* =====================================================
               TABLE
           ====================================================== */}
-          <section className="overflow-hidden rounded-[20px] border border-[#DCE9E4] bg-white shadow-[0_8px_30px_rgba(29,91,68,0.05)]">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#EBF2EE] px-5 py-3.5">
+          <section className="overflow-hidden rounded-[20px] border border-[#E3D9FF] bg-white shadow-[0_8px_30px_rgba(93,46,215,0.05)]">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#F3EFFF] px-5 py-3.5">
               <div>
-                <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-[#60786E]">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-[#553E82]">
                   Rental register
                 </p>
-                <p className="mt-0.5 text-[9px] font-medium text-slate-400">
+                <p className="mt-0.5 text-[9px] font-medium text-[#7F6EA6]">
                   {filteredRentals.length}{" "}
                   {filteredRentals.length === 1 ? "record" : "records"}{" "}
                   currently shown
                 </p>
               </div>
 
-              <div className="hidden items-center gap-1.5 text-[9px] font-medium text-slate-400 sm:flex">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <div className="hidden items-center gap-1.5 text-[9px] font-medium text-[#7F6EA6] sm:flex">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#D3C4FC] opacity-75" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#5d2ed7]" />
+                </span>
                 Live operational data
               </div>
             </div>
 
             {loading ? (
               <div className="flex flex-col items-center justify-center py-24">
-                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF8F3]">
-                  <RefreshCw
-                    size={20}
-                    className="animate-spin text-[#087A57]"
-                  />
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F3EFFF] text-[#5d2ed7]">
+                  <RefreshCw size={20} className="animate-spin" />
                 </div>
-                <p className="mt-4 text-[12px] font-bold text-[#60766D]">
+                <p className="mt-4 text-[12px] font-bold text-[#22124D]">
                   Loading rental records
                 </p>
-                <p className="mt-1 text-[10px] font-medium text-slate-400">
+                <p className="mt-1 text-[10px] font-medium text-[#7F6EA6]">
                   Syncing current equipment operations…
                 </p>
               </div>
             ) : filteredRentals.length === 0 ? (
               <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#E0EDE7] bg-[#F5FAF7] text-[#7A9489]">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#E3D9FF] bg-[#FAF8FF] text-[#9C8AC7]">
                   <Package size={24} />
                 </div>
-                <h3 className="mt-4 text-[14px] font-extrabold text-[#314D42]">
+                <h3 className="mt-4 text-[14px] font-extrabold text-[#22124D]">
                   No rental records found
                 </h3>
-                <p className="mt-1 max-w-[380px] text-[10px] font-medium leading-5 text-slate-400">
-                  Try changing the filters or create a new equipment rental
-                  requisition.
+                <p className="mt-1 max-w-[380px] text-[10px] font-medium leading-5 text-[#7F6EA6]">
+                  Try changing the filters or create a new equipment rental requisition.
                 </p>
                 <div className="mt-4 flex items-center gap-2">
                   {activeFilterCount > 0 && (
                     <button
                       type="button"
                       onClick={handleReset}
-                      className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-[#DDE9E4] bg-white px-3 text-[10px] font-bold text-[#60776D] hover:bg-slate-50"
+                      className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-[#E3D9FF] bg-white px-3 text-[10px] font-bold text-[#553E82] hover:bg-[#FAF8FF]"
                     >
                       <RotateCcw size={13} />
                       Clear filters
@@ -2415,7 +2452,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                   <button
                     type="button"
                     onClick={() => navigate("/rental-requisition")}
-                    className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-[#087A57] px-3.5 text-[10px] font-bold text-white hover:bg-[#066B4D]"
+                    className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-[#5d2ed7] px-3.5 text-[10px] font-bold text-white hover:bg-[#421E9F]"
                   >
                     <Plus size={13} />
                     New requisition
@@ -2427,7 +2464,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[1180px] border-collapse text-left">
                     <thead>
-                      <tr className="border-b border-[#E8F0EC] bg-[#F8FBF9] text-[9px] font-extrabold uppercase tracking-[0.12em] text-[#82968D]">
+                      <tr className="border-b border-[#F3EFFF] bg-[#FAF8FF] text-[9px] font-extrabold uppercase tracking-[0.12em] text-[#7F6EA6]">
                         <th className="px-5 py-3.5">Equipment</th>
                         <th className="px-5 py-3.5">Bed Number</th>
                         <th className="px-5 py-3.5">Patient / Client</th>
@@ -2439,7 +2476,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                       </tr>
                     </thead>
 
-                    <tbody className="divide-y divide-[#EEF3F0]">
+                    <tbody className="divide-y divide-[#F3EFFF]">
                       {currentRecords.map((rental) => {
                         const displayDeviceModel =
                           rental.device?.device_name || "Equipment Asset";
@@ -2464,7 +2501,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                             className={`group transition-colors ${
                               isDue
                                 ? "bg-amber-50/[0.28] hover:bg-amber-50/60"
-                                : "hover:bg-[#F9FBFA]"
+                                : "hover:bg-[#FAF8FF]"
                             }`}
                           >
                             {/* Equipment */}
@@ -2474,21 +2511,21 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                                   className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border ${
                                     isDue
                                       ? "border-amber-200 bg-amber-50 text-amber-700"
-                                      : "border-[#DDECE5] bg-[#F1F8F4] text-[#087A57]"
+                                      : "border-[#E8DEFF] bg-[#F3EFFF] text-[#5d2ed7]"
                                   }`}
                                 >
                                   <Package size={17} />
                                 </div>
                                 <div className="min-w-0">
-                                  <p className="max-w-[230px] truncate text-[12px] font-extrabold text-[#28473B]">
+                                  <p className="max-w-[230px] truncate text-[12px] font-extrabold text-[#22124D]">
                                     {displayDeviceModel}
                                   </p>
                                   <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[8.5px] font-bold text-slate-500">
+                                    <span className="rounded-md border border-[#E3D9FF] bg-[#FAF8FF] px-1.5 py-0.5 font-mono text-[8.5px] font-bold text-[#7F6EA6]">
                                       #{rental.rental_id}
                                     </span>
                                     {rental.unit_type && (
-                                      <span className="text-[9px] font-semibold text-slate-400">
+                                      <span className="text-[9px] font-semibold text-[#8B7BB5]">
                                         {rental.unit_type}
                                       </span>
                                     )}
@@ -2499,27 +2536,24 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
 
                             {/* Bed Number */}
                             <td className="px-5 py-4 align-middle">
-                              <span className="inline-flex min-w-[72px] items-center justify-center rounded-[8px] border border-[#DCE9E4] bg-[#F7FAF8] px-2.5 py-1 text-[10.5px] font-bold text-[#4F695E]">
-                                {rental.care_bed_no ||
-                                  rental.care_bed_no ||
-                                  rental.care_bed_no ||
-                                  "—"}
+                              <span className="inline-flex min-w-[72px] items-center justify-center rounded-[8px] border border-[#E3D9FF] bg-[#FAF8FF] px-2.5 py-1 text-[10.5px] font-bold text-[#553E82]">
+                                {rental.care_bed_no || "—"}
                               </span>
                             </td>
 
                             {/* Patient */}
                             <td className="px-5 py-4 align-middle">
                               <div className="flex items-center gap-2.5">
-                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[#F4F7F5] text-[#80958B]">
+                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[#F3EFFF] text-[#5d2ed7]">
                                   <UserRound size={14} />
                                 </div>
                                 <div className="min-w-0">
-                                  <p className="max-w-[180px] truncate text-[11px] font-bold text-[#3B544A]">
+                                  <p className="max-w-[180px] truncate text-[11px] font-bold text-[#22124D]">
                                     {rental.patient_name || "N/A"}
                                   </p>
                                   {(rental.carecenter?.carecenter_name ||
                                     rental.care_center?.carecenter_name) && (
-                                    <p className="mt-0.5 flex max-w-[180px] items-center gap-1 truncate text-[8.5px] font-medium text-slate-400">
+                                    <p className="mt-0.5 flex max-w-[180px] items-center gap-1 truncate text-[8.5px] font-medium text-[#7F6EA6]">
                                       <Building2 size={9} />
                                       {rental.carecenter?.carecenter_name ||
                                         rental.care_center?.carecenter_name}
@@ -2531,10 +2565,10 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
 
                             {/* Login */}
                             <td className="px-5 py-4 align-middle">
-                              <div className="inline-flex items-center gap-2 text-[10.5px] font-semibold text-[#5D7369]">
+                              <div className="inline-flex items-center gap-2 text-[10.5px] font-semibold text-[#553E82]">
                                 <CalendarDays
                                   size={13}
-                                  className="text-[#91A59C]"
+                                  className="text-[#9C8AC7]"
                                 />
                                 {formatDisplayDate(rental.login_date)}
                               </div>
@@ -2542,10 +2576,10 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
 
                             {/* Logout */}
                             <td className="px-5 py-4 align-middle">
-                              <div className="inline-flex items-center gap-2 text-[10.5px] font-semibold text-[#5D7369]">
+                              <div className="inline-flex items-center gap-2 text-[10.5px] font-semibold text-[#553E82]">
                                 <CalendarDays
                                   size={13}
-                                  className="text-[#91A59C]"
+                                  className="text-[#9C8AC7]"
                                 />
                                 {formatDisplayDate(rental.login_out_date)}
                               </div>
@@ -2570,7 +2604,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                               <div className="flex items-center justify-center gap-1.5">
                                 <Link
                                   to={`/rental-view/${rental.rental_id}`}
-                                  className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-slate-200 bg-white text-slate-600 transition hover:-translate-y-[1px] hover:border-[#CBDAD3] hover:bg-[#F7FAF8] hover:text-[#087A57] hover:shadow-sm"
+                                  className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-[#E3D9FF] bg-white text-[#553E82] transition hover:-translate-y-[1px] hover:border-[#D3C4FC] hover:bg-[#FAF8FF] hover:text-[#5d2ed7] hover:shadow-sm"
                                   title="View rental"
                                   aria-label={`View rental ${rental.rental_id}`}
                                 >
@@ -2579,7 +2613,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
 
                                 <Link
                                   to={`/rental-edit/${rental.rental_id}`}
-                                  className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-[#CFE7DC] bg-[#EEF8F3] text-[#087A57] transition hover:-translate-y-[1px] hover:border-[#ABD5C3] hover:bg-[#E4F4EC] hover:shadow-sm"
+                                  className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-[#E8DEFF] bg-[#F3EFFF] text-[#5d2ed7] transition hover:-translate-y-[1px] hover:border-[#D3C4FC] hover:bg-[#EAE2FF] hover:shadow-sm"
                                   title="Edit rental"
                                   aria-label={`Edit rental ${rental.rental_id}`}
                                 >
@@ -2607,18 +2641,18 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                 </div>
 
                 {/* Pagination */}
-                <div className="flex flex-col items-center justify-between gap-3 border-t border-[#EAF1ED] bg-[#FBFDFC] px-5 py-3.5 sm:flex-row">
-                  <p className="text-[10px] font-medium text-[#7D9188]">
+                <div className="flex flex-col items-center justify-between gap-3 border-t border-[#F3EFFF] bg-[#FAF8FF] px-5 py-3.5 sm:flex-row">
+                  <p className="text-[10px] font-medium text-[#7F6EA6]">
                     Showing{" "}
-                    <span className="font-bold text-[#4F695E]">
+                    <span className="font-bold text-[#22124D]">
                       {indexOfFirstRecord + 1}
-                    </span>
-                    –
-                    <span className="font-bold text-[#4F695E]">
+                    </span>{" "}
+                    –{" "}
+                    <span className="font-bold text-[#22124D]">
                       {Math.min(indexOfLastRecord, filteredRentals.length)}
                     </span>{" "}
                     of{" "}
-                    <span className="font-bold text-[#4F695E]">
+                    <span className="font-bold text-[#22124D]">
                       {filteredRentals.length}
                     </span>{" "}
                     records
@@ -2631,7 +2665,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                         setCurrentPage((prev) => Math.max(prev - 1, 1))
                       }
                       disabled={currentPage === 1}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#DCE8E3] bg-white text-[#60786E] transition hover:border-[#C6DBD1] hover:bg-[#F6FAF8] disabled:cursor-not-allowed disabled:opacity-35"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#E3D9FF] bg-white text-[#553E82] transition hover:border-[#D3C4FC] hover:bg-[#FAF8FF] disabled:cursor-not-allowed disabled:opacity-35"
                       title="Previous page"
                       aria-label="Previous page"
                     >
@@ -2652,7 +2686,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                         return (
                           <React.Fragment key={page}>
                             {showEllipsis && (
-                              <span className="px-1 text-[10px] text-slate-400">
+                              <span className="px-1 text-[10px] text-[#A697C7]">
                                 …
                               </span>
                             )}
@@ -2661,8 +2695,8 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                               onClick={() => setCurrentPage(page)}
                               className={`h-8 min-w-[32px] rounded-lg border px-2 text-[10px] font-extrabold transition ${
                                 currentPage === page
-                                  ? "border-[#087A57] bg-[#087A57] text-white shadow-sm"
-                                  : "border-[#DCE8E3] bg-white text-[#60786E] hover:bg-[#F6FAF8]"
+                                  ? "border-[#5d2ed7] bg-[#5d2ed7] text-white shadow-sm"
+                                  : "border-[#E3D9FF] bg-white text-[#553E82] hover:bg-[#FAF8FF]"
                               }`}
                             >
                               {page}
@@ -2677,7 +2711,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                         setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                       }
                       disabled={currentPage === totalPages}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#DCE8E3] bg-white text-[#60786E] transition hover:border-[#C6DBD1] hover:bg-[#F6FAF8] disabled:cursor-not-allowed disabled:opacity-35"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#E3D9FF] bg-white text-[#553E82] transition hover:border-[#D3C4FC] hover:bg-[#FAF8FF] disabled:cursor-not-allowed disabled:opacity-35"
                       title="Next page"
                       aria-label="Next page"
                     >
@@ -2699,13 +2733,13 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
           <button
             type="button"
             aria-label="Close calculator"
-            className="absolute inset-0 cursor-default bg-[#10251D]/45 backdrop-blur-[3px]"
+            className="absolute inset-0 cursor-default bg-[#22124D]/55 backdrop-blur-[3px]"
             onClick={closeCalcModal}
           />
 
-          <div className="relative w-full max-w-[480px] overflow-hidden rounded-[22px] border border-white/30 bg-white shadow-[0_28px_80px_rgba(16,55,41,0.28)]">
+          <div className="relative w-full max-w-[480px] overflow-hidden rounded-[22px] border border-white/30 bg-white shadow-[0_28px_80px_rgba(37,15,97,0.28)] animate-in fade-in zoom-in-95 duration-150">
             {/* Modal header */}
-            <div className="relative overflow-hidden bg-gradient-to-r from-[#075F46] to-[#0A8E63] px-5 py-5 text-white">
+            <div className="relative overflow-hidden bg-gradient-to-r from-[#250F61] via-[#421E9F] to-[#5d2ed7] px-5 py-5 text-white">
               <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full border border-white/[0.08]" />
               <div className="relative z-10 flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
@@ -2713,13 +2747,13 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                     <Calculator size={18} />
                   </div>
                   <div>
-                    <p className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-emerald-100/65">
+                    <p className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-purple-200/70">
                       Rental duration tool
                     </p>
                     <h3 className="mt-1 text-[16px] font-extrabold tracking-tight">
                       Calculate Total Days
                     </h3>
-                    <p className="mt-1 max-w-[310px] text-[10px] font-medium text-emerald-50/65">
+                    <p className="mt-1 max-w-[310px] text-[10px] font-medium text-purple-100/70">
                       Calculation purpose only · temporary calculation · does
                       not change any rental record
                     </p>
@@ -2741,43 +2775,43 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
             <div className="p-5">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1.5 block text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#71887E]">
+                  <label className="mb-1.5 block text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#7F6EA6]">
                     Login Date
                   </label>
                   <div className="relative">
                     <CalendarDays
                       size={14}
-                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8DA199]"
+                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                     />
                     <input
                       type="date"
                       value={editLoginDate}
                       onChange={(e) => setEditLoginDate(e.target.value)}
-                      className="h-11 w-full rounded-xl border border-[#DCE9E4] bg-[#FBFDFC] pl-9 pr-3 text-[11px] font-semibold text-[#425B51] outline-none transition focus:border-[#0A8B61] focus:bg-white focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
+                      className="h-11 w-full rounded-xl border border-[#E3D9FF] bg-[#FAF8FF] pl-9 pr-3 text-[11px] font-semibold text-[#22124D] outline-none transition focus:border-[#5d2ed7] focus:bg-white focus:ring-4 focus:ring-[#5d2ed7]/[0.08]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#71887E]">
+                  <label className="mb-1.5 block text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#7F6EA6]">
                     Logout Date
                   </label>
                   <div className="relative">
                     <CalendarDays
                       size={14}
-                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8DA199]"
+                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#9C8AC7]"
                     />
                     <input
                       type="date"
                       value={editLogoutDate}
                       onChange={(e) => setEditLogoutDate(e.target.value)}
-                      className="h-11 w-full rounded-xl border border-[#DCE9E4] bg-[#FBFDFC] pl-9 pr-3 text-[11px] font-semibold text-[#425B51] outline-none transition focus:border-[#0A8B61] focus:bg-white focus:ring-4 focus:ring-[#0A8B61]/[0.07]"
+                      className="h-11 w-full rounded-xl border border-[#E3D9FF] bg-[#FAF8FF] pl-9 pr-3 text-[11px] font-semibold text-[#22124D] outline-none transition focus:border-[#5d2ed7] focus:bg-white focus:ring-4 focus:ring-[#5d2ed7]/[0.08]"
                     />
                   </div>
                 </div>
               </div>
 
-              <p className="mt-2 text-[9px] font-medium text-slate-400">
+              <p className="mt-2 text-[9px] font-medium text-[#7F6EA6]">
                 Leave logout date empty to calculate duration through today.
               </p>
 
@@ -2786,20 +2820,20 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                 className={`mt-5 rounded-[18px] border p-5 text-center ${
                   !editLogoutDate && modalDays >= 30
                     ? "border-amber-200 bg-amber-50"
-                    : "border-[#DCECE5] bg-[#F4FAF7]"
+                    : "border-[#E3D9FF] bg-[#FAF8FF]"
                 }`}
               >
-                <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#087A57] shadow-sm ring-1 ring-black/[0.03]">
+                <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#5d2ed7] shadow-sm ring-1 ring-black/[0.03]">
                   <Clock3 size={16} />
                 </div>
-                <p className="mt-3 text-[9px] font-extrabold uppercase tracking-[0.14em] text-[#7A9187]">
+                <p className="mt-3 text-[9px] font-extrabold uppercase tracking-[0.14em] text-[#7F6EA6]">
                   Calculated rental days
                 </p>
                 <div className="mt-1.5 flex items-baseline justify-center gap-1.5">
-                  <span className="text-[30px] font-black tracking-[-0.04em] text-[#087A57]">
+                  <span className="text-[30px] font-black tracking-[-0.04em] text-[#5d2ed7]">
                     {modalDays}
                   </span>
-                  <span className="text-[15px] font-bold text-[#82958D]">
+                  <span className="text-[15px] font-bold text-[#8B7BB5]">
                     / {modalSecond}
                   </span>
                 </div>
@@ -2812,8 +2846,8 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-2 border-t border-[#E9F0ED] bg-[#FBFDFC] px-5 py-4">
-              <p className="hidden text-[8.5px] font-medium text-[#98A9A1] sm:block">
+            <div className="flex items-center justify-between gap-2 border-t border-[#F3EFFF] bg-[#FAF8FF] px-5 py-4">
+              <p className="hidden text-[8.5px] font-medium text-[#7F6EA6] sm:block">
                 Calculator values are temporary and are not saved.
               </p>
 
@@ -2822,7 +2856,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                   type="button"
                   onClick={clearCalculator}
                   disabled={!editLoginDate && !editLogoutDate}
-                  className="h-10 rounded-xl border border-[#DCE8E3] bg-white px-4 text-[10px] font-bold text-[#687E74] transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="h-10 rounded-xl border border-[#E3D9FF] bg-white px-4 text-[10px] font-bold text-[#553E82] transition hover:bg-[#FAF8FF] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Clear
                 </button>
@@ -2830,7 +2864,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                 <button
                   type="button"
                   onClick={closeCalcModal}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-gradient-to-r from-[#087A57] to-[#0A9668] px-4 text-[10px] font-extrabold text-white shadow-[0_8px_18px_rgba(8,122,87,0.2)] transition hover:-translate-y-[1px]"
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-gradient-to-r from-[#421E9F] to-[#5d2ed7] px-4 text-[10px] font-extrabold text-white shadow-[0_8px_18px_rgba(93,46,215,0.2)] transition hover:-translate-y-[1px]"
                 >
                   <CheckCircle2 size={13} />
                   Done
