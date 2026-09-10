@@ -3413,7 +3413,7 @@ export default function RentalForm({
                           {center.carecenter_name}
                         </option>
                       ))}
-                      <option value="other">Other / Manual Entry</option>
+                      <option value="other">Other / Care Center</option>
                     </select>
                   </div>
 
