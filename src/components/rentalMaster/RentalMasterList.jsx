@@ -1877,7 +1877,7 @@ export default function RentalMasterList({ onEdit, onView, onCreateNew }) {
                     className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-[#421E9F] to-[#5d2ed7] px-4 text-[10px] font-extrabold text-white shadow-[0_6px_18px_rgba(93,46,215,0.2)] transition hover:brightness-105 active:scale-95"
                   >
                     <Plus size={14} strokeWidth={2.5} />
-                    Log New Requisition
+                    New
                   </button>
                 </div>
               </div>
